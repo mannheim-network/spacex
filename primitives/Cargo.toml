@@ -1,0 +1,31 @@
+[package]
+name = "cst-primitives"
+version = "1.0.0"
+authors = ["mannheim"]
+edition = "2018"
+license = "Apache-2.0"
+homepage = "https://mannheim.network"
+repository = "https://github.com/mannheim-network/spacex/"
+
+[dependencies]
+# third party dependencies
+serde = { optional = true, features = ["derive"], version = "1.0.116" }
+parity-scale-codec = { default-features = false, features = ["bit-vec", "derive"], version = "2.0.0" }
+
+# substrate primitives
+sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-core = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+
+[features]
+default = ["std"]
+std = [
+	"parity-scale-codec/std",
+	"sp-runtime/std",
+	"sp-core/std",
+	"sp-std/std",
+	"frame-support/std",
+	"serde",
+]
+test = []
