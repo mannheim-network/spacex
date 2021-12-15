@@ -1,0 +1,165 @@
+[package]
+authors = ["mannheim"]
+edition = "2018"
+name = "spacex-runtime"
+version = "1.0.0"
+build = "build.rs"
+license = "Apache-2.0"
+homepage = "https://mannheim.network"
+repository = "https://github.com/mannheim-network/spacex/"
+
+[build-dependencies]
+substrate-wasm-builder = { git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4"}
+
+[dependencies]
+# third party dependencies
+codec = { default-features = false, features = ["derive"], package = "parity-scale-codec", version = "2.0.0" }
+serde = { features = ["derive"], optional = true, version = "1.0.117" }
+static_assertions = "1.1.0"
+smallvec = "1.4.1"
+hex-literal = "0.3.1"
+
+# substrate primitives
+authority-discovery-primitives = { default-features = false, package = "sp-authority-discovery", git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+babe-primitives = { default-features = false, package = "sp-consensus-babe", git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-api = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-block-builder = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-core = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-inherents = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-io = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-offchain = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-session = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-staking = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-transaction-pool = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-version = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+sp-arithmetic = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+
+# substrate frame dependencies
+pallet-authorship = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-authority-discovery = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-babe = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-bounties = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-collective = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-democracy = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-elections-phragmen = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+frame-executive = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-grandpa = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-im-online = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-indices = { git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4", default-features = false }
+pallet-identity = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4"}
+pallet-membership = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-offences = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-randomness-collective-flip = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-scheduler = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-session = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-sudo = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-staking-reward-curve = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+frame-system = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-timestamp = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-tips = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-transaction-payment = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-treasury = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-utility = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-multisig = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+
+# substrate benchmark dependencies
+frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4"}
+frame-system-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4"}
+
+# Used for the spacex"s RPCs
+frame-system-rpc-runtime-api = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "3971a18dd746ff5190d2d274cfcdaf7dae5f8ce4" }
+
+# spacex runtime modules
+balances = { package = "cstrml-balances", path = "../cstrml/balances", default-features = false, version = "1.0.0" }
+claims = { package = "cstrml-claims", path = "../cstrml/claims", default-features = false, version = "1.0.0" }
+market = { package = "cstrml-market", path = "../cstrml/market", default-features = false, version = "1.0.0" }
+primitives = { package = "cst-primitives", path = "../primitives", default-features = false, version = "1.0.0" }
+swork = { package = "cstrml-swork", path = "../cstrml/swork", default-features = false, version = "1.0.0" }
+staking = { package = "cstrml-staking", path = "../cstrml/staking", default-features = false, version = "1.0.0" }
+benefits = { package = "cstrml-benefits", path = "../cstrml/benefits", default-features = false, version = "1.0.0" }
+locks = { package = "cstrml-locks", path = "../cstrml/locks", default-features = false, version = "1.0.0" }
+csm-locking = { package = "cstrml-csm-locking", path = "../cstrml/csm-locking", default-features = false, version = "1.0.0" }
+bridge = { package = "cstrml-bridge", path = "../cstrml/bridge", default-features = false, version = "1.0.0" }
+bridge-transfer = { package = "cstrml-bridge-transfer", path = "../cstrml/bridge-transfer", default-features = false, version = "1.0.0" }
+
+# spacex benchmark dependencies
+swork-benchmarking = { package = "cstrml-swork-benchmarking", path = "../cstrml/swork/benchmarking", default-features = false, optional = true, version = "1.0.0" }
+
+[features]
+default = ["std"]
+std = [
+    "authority-discovery-primitives/std",
+    "babe-primitives/std",
+    "codec/std",
+    "primitives/std",
+    "serde",
+    "sp-api/std",
+    "sp-block-builder/std",
+    "sp-core/std",
+    "sp-inherents/std",
+    "sp-io/std",
+    "frame-support/std",
+    "sp-offchain/std",
+    "sp-runtime/std",
+    "sp-session/std",
+    "sp-staking/std",
+    "sp-std/std",
+    "sp-transaction-pool/std",
+    "sp-version/std",
+    "sp-arithmetic/std",
+    "pallet-authorship/std",
+    "pallet-authority-discovery/std",
+    "pallet-babe/std",
+    "balances/std",
+    "pallet-bounties/std",
+    "claims/std",
+    "pallet-collective/std",
+    "pallet-elections-phragmen/std",
+    "frame-executive/std",
+    "pallet-democracy/std",
+    "pallet-grandpa/std",
+    "pallet-identity/std",
+    "pallet-im-online/std",
+    "pallet-indices/std",
+    "market/std",
+    "pallet-membership/std",
+    "pallet-offences/std",
+    "pallet-randomness-collective-flip/std",
+    "pallet-scheduler/std",
+    "pallet-session/std",
+    "pallet-multisig/std",
+    "staking/std",
+    "pallet-sudo/std",
+    "swork/std",
+    "benefits/std",
+    "locks/std",
+    "csm-locking/std",
+    "frame-system/std",
+    "frame-system-rpc-runtime-api/std",
+    "pallet-timestamp/std",
+    "pallet-tips/std",
+    "pallet-transaction-payment/std",
+    "pallet-transaction-payment-rpc-runtime-api/std",
+    "pallet-treasury/std",
+    "pallet-utility/std",
+]
+runtime-benchmarks = [
+    "frame-benchmarking",
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+    "pallet-collective/runtime-benchmarks",
+    "balances/runtime-benchmarks",
+    "frame-system-benchmarking",
+    "staking/runtime-benchmarks",
+    "market/runtime-benchmarks",
+    "csm-locking/runtime-benchmarks",
+    "swork-benchmarking",
+    "benefits/runtime-benchmarks",
+    "csm-locking/runtime-benchmarks",
+    "locks/runtime-benchmarks",
+]
