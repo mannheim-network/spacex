@@ -1,0 +1,52 @@
+[package]
+name = "cstrml-swork"
+version = "1.0.0"
+authors = ["mannheim"]
+edition = "2018"
+license = "Apache-2.0"
+homepage = "https://mannheim.network"
+repository = "https://github.com/mannheim-network/spacex/"
+
+[dependencies]
+# third party dependencies
+codec = { default-features = false, package = "parity-scale-codec", version = "2.0.0" }
+serde = { optional = true, version = "1.0.116" }
+base64 = { default-features = false, features = ["alloc"], version = "0.12.2" }
+p256 = { default-features = false, features = ["ecdsa"], version = "0.5.1" }
+
+# substrate frame dependencies
+frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+frame-system = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+
+# substrate primitives
+sp-core = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sp-io = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+
+# Mannheim runtime modules
+primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
+webpki = { package = "webpki", path = "../../utils/webpki", default-features = false }
+serde_json = { package = "serde_json_no_std", path = "../../utils/serde_json_no_std", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+keyring = { package = "sp-keyring", git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+balances = { package = "cstrml-balances", path = "../balances" }
+primitives = { package = "cst-primitives", path = "../../primitives", features = ["test"] }
+market = { package = "cstrml-market", path = "../market" }
+hex = "0.4.2"
+
+[features]
+default = ["std"]
+std = [
+    "serde",
+    "codec/std",
+    "frame-support/std",
+    "sp-core/std",
+    "sp-io/std",
+    "sp-runtime/std",
+    "sp-std/std",
+    "frame-system/std",
+    "primitives/std",
+    "webpki/std"
+]
