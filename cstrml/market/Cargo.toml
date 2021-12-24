@@ -25,7 +25,7 @@ sp-std = { default-features = false, git = "https://github.com/mannheim-network/
 
 frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
 
-# crust runtime modules
+# Mannheim runtime modules
 primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
 
 [features]
