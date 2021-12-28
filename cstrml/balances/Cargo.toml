@@ -1,0 +1,43 @@
+[package]
+name = "cstrml-balances"
+version = "1.0.0"
+authors = ["mannheim"]
+edition = "2018"
+license = "Apache-2.0"
+homepage = "https://mannheim.network"
+repository = "https://github.com/mannheim-network/spacex/"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+serde = { optional = true, version = "1.0.116" }
+codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.0.0" }
+sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+frame-system = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+
+# crust runtime modules
+primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
+
+[dev-dependencies]
+sp-io = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sp-core = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+pallet-transaction-payment = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+primitives = { package = "cst-primitives", path = "../../primitives", features = ["test"] }
+
+[features]
+default = ["std"]
+std = [
+	"serde",
+	"codec/std",
+	"sp-std/std",
+	"sp-runtime/std",
+	"frame-benchmarking/std",
+	"frame-support/std",
+	"frame-system/std",
+	"primitives/std"
+]
+runtime-benchmarks = ["frame-benchmarking"]
