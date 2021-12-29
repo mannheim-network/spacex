@@ -1,0 +1,38 @@
+[package]
+authors = ["mannheim"]
+edition = "2018"
+name = "spacex-rpc"
+version = "1.0.0"
+license = "Apache-2.0"
+homepage = "https://mannheim.network"
+repository = "https://github.com/mannheim-network/spacex/"
+
+[dependencies]
+jsonrpc-core = "15.1.0"
+frame-rpc-system = { package = "substrate-frame-rpc-system", git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"  }
+codec = { default-features = false, package = "parity-scale-codec", version = "2.0.0" }
+
+# substrate client dependencies
+sc-client-api = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sc-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sc-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sc-consensus-babe-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sc-consensus-epochs = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sc-finality-grandpa = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sc-finality-grandpa-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sc-keystore = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+
+# substrate pallet dependencies
+sp-keystore = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sp-blockchain = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sp-runtime = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sp-api = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sp-consensus = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sp-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+txpool-api = { package = "sp-transaction-pool", git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+pallet-transaction-payment-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sp-block-builder = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+
+# Mannheim dependent
+spacex-primitives = { package = "cst-primitives", path="../primitives", version = "1.0.0" }
+spacex-runtime = { package = "spacex-runtime", path = "../runtime", version = "1.0.0" }
