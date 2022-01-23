@@ -52,7 +52,7 @@ pub mod weight;
 use swork;
 use primitives::{
     EraIndex,
-    constants::{currency::*, time::*, staking::*},
+    constants::{currency::*, time::*},
     traits::{UsableCurrency, MarketInterface, BenefitInterface}
 };
 

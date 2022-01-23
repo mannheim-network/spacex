@@ -182,7 +182,7 @@ pub use weights::WeightInfo;
 
 pub use pallet::*;
 
-// Crust primitives
+// SpaceX primitives
 use primitives::traits::UsableCurrency;
 
 #[frame_support::pallet]

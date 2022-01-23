@@ -14,18 +14,18 @@ safe-mix = { default-features = false, version = "1.0.0" }
 codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.0.0" }
 
 # substrate frame dependencies
-frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-frame-system = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-pallet-session = { features = ["historical"], default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-pallet-authorship = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+frame-system = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+pallet-session = { features = ["historical"], default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+pallet-authorship = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
 
 # substrate primitives
-sp-keyring = { optional = true, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-sp-io ={ default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-sp-staking = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
-frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2" }
+sp-keyring = { optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-io ={ default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-staking = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
 rand_chacha = { default-features = false, version = "0.2" }
 
 # spacex runtime modules
@@ -33,14 +33,14 @@ swork = { package = "cstrml-swork", path = "../swork", default-features = false 
 primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
 
 [dev-dependencies]
-sp-core = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+sp-core = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
 balances = { package = "cstrml-balances", path = "../balances" }
 primitives = { package = "cst-primitives", path = "../../primitives", features = ["test"] }
-pallet-timestamp = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
-frame-benchmarking = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+pallet-timestamp = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+frame-benchmarking = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
 
 # private crate inside substrate
-substrate-test-utils = { git = "https://github.com/mannheim-network/substrate", rev = "4ceffa74390523ef1a3e93113dc8f89f235c26d2"}
+substrate-test-utils = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
 
 [features]
 equalize = []

@@ -6,7 +6,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: None, DB CACHE: 128
 
 // Executed Command:
-// ../target/release/crust
+// ../target/release/spacex
 // benchmark
 // --execution
 // wasm

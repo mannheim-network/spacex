@@ -1,5 +1,5 @@
-// Copyright (C) 2019-2021 Crust Network Technologies Ltd.
-// This file is part of Crust.
+// Copyright (C) 2019-2021 Mannheim Network Technologies Ltd.
+// This file is part of Mannheim.
 
 use super::*;
 use crate as locks;
@@ -74,7 +74,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Module, Call, Config, Storage, Event<T>},
 		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
-        CrustLocks: locks::{Module, Call, Storage, Event<T>, Config<T>},
+        SpacexLocks: locks::{Module, Call, Storage, Event<T>, Config<T>},
 	}
 );
 

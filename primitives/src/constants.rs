@@ -1,17 +1,17 @@
-// Copyright (C) 2019-2021 Crust Network Technologies Ltd.
-// This file is part of Crust.
+// Copyright (C) 2019-2021 Mannheim Network Technologies Ltd.
+// This file is part of Mannheim.
 
 /// Money matters.
 pub mod currency {
     use crate::Balance;
 
-    pub const CRUS: Balance = 1_000_000_000_000;
-    pub const DOLLARS: Balance = CRUS;
+    pub const HEIM: Balance = 1_000_000_000_000;
+    pub const DOLLARS: Balance = HEIM;
     pub const CENTS: Balance = DOLLARS / 100;
     pub const MILLICENTS: Balance = CENTS / 1_000;
 
     // GPoS rewards in the first year
-    pub const FIRST_YEAR_REWARDS: Balance = 5_000_000 * CRUS;
+    pub const FIRST_QUARTER_REWARDS: Balance = 10_200_000 * HEIM;
 
     pub const fn deposit(items: u32, bytes: u32) -> Balance {
 		items as Balance * 1_000 * CENTS + (bytes as Balance) * 100 * MILLICENTS
@@ -23,7 +23,7 @@ pub mod time {
     use crate::{BlockNumber, Moment};
 
     // Alpha & mainnet
-    pub const MILLISECS_PER_BLOCK: Moment = 6000;
+    pub const MILLISECS_PER_BLOCK: Moment = 3000;
     // Testnet
     //	pub const MILLISECS_PER_BLOCK: Moment = 1000;
     pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
