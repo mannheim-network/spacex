@@ -1,4 +1,4 @@
-# Build crust env image
+# Build spacex env image
 FROM rust:latest
 
 ARG TOOLCHAIN
