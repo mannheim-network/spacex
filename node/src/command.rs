@@ -1,0 +1,120 @@
+// Copyright (C) 2019-2021 Spacex Network Technologies Ltd.
+
+use crate::chain_spec;
+use crate::cli::{Cli, Subcommand};
+use crate::service as crust_service;
+use crate::executor::Executor;
+use crust_service::{new_partial, new_full, new_light};
+use sc_service::PartialComponents;
+use sc_cli::{SubstrateCli, RuntimeVersion, Role, ChainSpec};
+use spacex_runtime::Block;
+
+impl SubstrateCli for Cli {
+    fn impl_name() -> String { "Spacex".into() }
+
+    fn impl_version() -> String { env!("SUBSTRATE_CLI_IMPL_VERSION").into() }
+
+    fn executable_name() -> String { "spacex".into() }
+
+    fn description() -> String { env!("CARGO_PKG_DESCRIPTION").into() }
+
+    fn author() -> String { env!("CARGO_PKG_AUTHORS").into() }
+
+    fn support_url() -> String { "https://github.com/mannheim-network/spacex/issues/new".into() }
+
+    fn copyright_start_year() -> i32 { 2021 }
+
+    fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
+        Ok(match id {
+            "rubik" => Box::new(chain_spec::rubik_config()?),
+            "mainnet" => Box::new(chain_spec::mainnet_config()?),
+            "rubik-staging" => Box::new(chain_spec::rubik_staging_config()?),
+            "mainnet-staging" => Box::new(chain_spec::mainnet_staging_config()?),
+            "dev" => Box::new(chain_spec::development_config()?),
+            "" | "local" => Box::new(chain_spec::local_testnet_config()?),
+            path => Box::new(chain_spec::SpacexChainSpec::from_json_file(
+                std::path::PathBuf::from(path),
+            )?),
+        })
+    }
+
+    fn native_runtime_version(_chain_spec: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
+        &spacex_runtime::VERSION
+    }
+}
+
+/// Parse and run command line arguments
+pub fn run() -> sc_cli::Result<()> {
+    let cli = Cli::from_args();
+
+    match &cli.subcommand {
+        Some(Subcommand::BuildSpec(cmd)) => {
+            let runner = cli.create_runner(cmd)?;
+            runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
+        },
+        Some(Subcommand::CheckBlock(cmd)) => {
+            let runner = cli.create_runner(cmd)?;
+            runner.async_run(|config| {
+                let PartialComponents { client, task_manager, import_queue, .. }
+                    = new_partial(&config)?;
+                Ok((cmd.run(client, import_queue), task_manager))
+            })
+        },
+        Some(Subcommand::ExportBlocks(cmd)) => {
+            let runner = cli.create_runner(cmd)?;
+            runner.async_run(|config| {
+                let PartialComponents { client, task_manager, ..}
+                    = new_partial(&config)?;
+                Ok((cmd.run(client, config.database), task_manager))
+            })
+        },
+        Some(Subcommand::ExportState(cmd)) => {
+            let runner = cli.create_runner(cmd)?;
+            runner.async_run(|config| {
+                let PartialComponents { client, task_manager, ..}
+                    = new_partial(&config)?;
+                Ok((cmd.run(client, config.chain_spec), task_manager))
+            })
+        },
+        Some(Subcommand::ImportBlocks(cmd)) => {
+            let runner = cli.create_runner(cmd)?;
+            runner.async_run(|config| {
+                let PartialComponents { client, task_manager, import_queue, ..}
+                    = new_partial(&config)?;
+                Ok((cmd.run(client, import_queue), task_manager))
+            })
+        },
+        Some(Subcommand::PurgeChain(cmd)) => {
+            let runner = cli.create_runner(cmd)?;
+            runner.sync_run(|config| cmd.run(config.database))
+        },
+        Some(Subcommand::Revert(cmd)) => {
+            let runner = cli.create_runner(cmd)?;
+            runner.async_run(|config| {
+                let PartialComponents { client, task_manager, backend, ..}
+                    = new_partial(&config)?;
+                Ok((cmd.run(client, backend), task_manager))
+            })
+        },
+        Some(Subcommand::Benchmark(subcommand)) => {
+            if cfg!(feature = "runtime-benchmarks") {
+                let runner = cli.create_runner(subcommand)?;
+
+                runner.sync_run(|config| subcommand.run::<Block, Executor>(config))
+            } else {
+                println!("Benchmarking wasn't enabled when building the node. \
+                You can enable it with `--features runtime-benchmarks`.");
+                Ok(())
+            }
+        },
+        None => {
+            let runner = cli.create_runner(&cli.run)?;
+            runner.run_node_until_exit(|config| async move {
+                match config.role {
+                    Role::Light => new_light(config),
+                    _ => new_full(config),
+                }.map_err(sc_cli::Error::Service)
+            })
+        }
+    }
+}

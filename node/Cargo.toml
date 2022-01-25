@@ -1,0 +1,80 @@
+[package]
+name = "spacex"
+version = "1.2.0"
+authors = ["mannheim"]
+build = "build.rs"
+edition = "2018"
+license = "Apache-2.0"
+homepage = "https://mannheim.network"
+repository = "https://github.com/mannheim-network/spacex/"
+
+[[bin]]
+name = "spacex"
+
+[dependencies]
+# third parity dependencies
+futures = "0.3.8"
+log = "0.4.11"
+structopt = { optional = true, version = "0.3.21" }
+hex-literal = "0.3.1"
+
+# substrate client dependencies
+authority-discovery = { package = "sc-authority-discovery", git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-finality-grandpa  = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-basic-authorship = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-client-api = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sc-cli = { features = ["wasmtime"], optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-consensus = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-consensus-slots = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-executor = { features = ["wasmtime"], git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-network = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-service = { features = ["wasmtime"], git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sc-transaction-pool = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+
+# substrate primitives
+sp-transaction-pool = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sp-core = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sp-consensus = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-inherents = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sp-io = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sp-runtime = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sp-finality-grandpa = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+frame-benchmarking-cli = { optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+frame-benchmarking = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+
+# spacex runtime modules
+spacex-runtime = { path = "../runtime", version = "1.0.0" }
+cstrml-staking = { path = "../cstrml/staking", version = "1.0.0" }
+cstrml-swork = { path = "../cstrml/swork", version = "1.0.0" }
+cstrml-locks = { path = "../cstrml/locks", version = "1.0.0" }
+primitives = { package = "cst-primitives", path = "../primitives", version = "1.0.0" }
+spacex-rpc = { path =  "../rpc", version = "1.0.0" }
+
+[build-dependencies]
+substrate-build-script-utils = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+frame-benchmarking-cli = { optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+
+[features]
+default = [ "cli" ]
+cli = [
+    "wasmi-errno",
+    "sc-cli",
+    "frame-benchmarking-cli",
+    "sc-service/db",
+    "structopt",
+]
+
+runtime-benchmarks = [
+    "spacex-runtime/runtime-benchmarks",
+    "frame-benchmarking-cli",
+]
+
+wasmtime = [
+    "sc-executor/wasmtime",
+]
+
+wasmi-errno = [
+    "sc-executor/wasmi-errno",
+]
