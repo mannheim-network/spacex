@@ -1,5 +1,5 @@
-// Copyright (C) 2019-2021 Crust Network Technologies Ltd.
-// This file is part of Crust.
+// Copyright (C) 2019-2021 Mannheim Network Technologies Ltd.
+// This file is part of Mannheim.
 
 use frame_support::traits::{OnUnbalanced, Currency, Imbalance, WithdrawReasons, Get, ExistenceRequirement};
 use frame_support::unsigned::TransactionValidityError;

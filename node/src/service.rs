@@ -1,5 +1,5 @@
-// Copyright (C) 2019-2021 Spacex Network Technologies Ltd.
-// This file is part of Spacex.
+// Copyright (C) 2019-2021 Mannheim Network Technologies Ltd.
+// This file is part of Mannheim.
 
 //! Spacex service. Specialized wrapper over substrate service.
 
@@ -329,7 +329,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError>
 /// id will be off by one when compared to syncing nodes. This makes it so that e.g. signature
 /// verification of justifications fails and syncing nodes cannot get to the latest finalized block.
 /// In order to fix this we need to "manually" insert a forced change as a GRANDPA hard fork below.
-/// The list of authorities below is taken from block #2080862 (https://crust.subscan.io/extrinsic/2080862-0?event=2080862-1),
+/// The list of authorities below is taken from block #2080862 ,
 /// and the manual forced change is inserted at #2080800.
 pub(crate) fn grandpa_mainnet_hard_forks() -> Vec<AuthoritySetHardFork<Block>> {
     use std::str::FromStr;

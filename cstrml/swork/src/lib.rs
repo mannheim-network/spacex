@@ -9,7 +9,7 @@ use frame_support::{
     decl_event, decl_module, decl_storage, decl_error, ensure,
     dispatch::{DispatchResult, DispatchResultWithPostInfo},
     storage::{IterableStorageMap, generator::StorageMap, unhashed},
-    traits::{Currency, ReservableCurrency, Get},
+    traits::{Currency, LockIdentifier,LockableCurrency, WithdrawReasons, ReservableCurrency, Get},
     ReversibleStorageHasher,
     weights::{
         Weight, DispatchClass, Pays
@@ -38,6 +38,7 @@ pub mod weight;
 /// Provides util functions
 pub mod utils;
 
+mod slashing;
 #[cfg(test)]
 mod mock;
 
@@ -55,6 +56,7 @@ const FILES_LIMIT: u64 = 9_007_199_254_740_992; // 8 PB <-> 8 * 1024 * 1024 * 10
 const FILES_COUNT_LIMIT: usize = 300; // TODO: 300 files for now(will be deleted after completed wr reporting mechanism).
 const NEW_IDENTITY: ReportSlot = 1;
 const NO_PUNISHMENT: ReportSlot = 0;
+const SWORK_ID: LockIdentifier = *b"___swork";
 
 #[macro_export]
 macro_rules! log {
@@ -174,7 +176,7 @@ impl<T: Config> SworkerInterface<T::AccountId> for Module<T> {
 pub trait Config: system::Config {
     /// The payment balance.
     /// TODO: remove this for abstracting MarketInterface into sWorker self
-    type Currency: ReservableCurrency<Self::AccountId>;
+    type Currency: ReservableCurrency<Self::AccountId> + LockableCurrency<Self::AccountId>;
 
     /// The overarching event type.
     type Event: From<Event<Self>> + Into<<Self as system::Config>::Event>;
@@ -190,6 +192,15 @@ pub trait Config: system::Config {
 
     /// Max number of members in one group
     type MaxGroupSize: Get<u32>;
+
+    ///lock amount when join group
+    type Locks: Get<BalanceOf<Self>>;
+
+    ///slash amount when join group
+    type Slash: Get<BalanceOf<Self>>;
+
+    ///how long can unlock token
+    type LockPeriod: Get<Self::BlockNumber>;
 
     /// Fee reduction interface
     type BenefitInterface: BenefitInterface<Self::AccountId, BalanceOf<Self>, NegativeImbalanceOf<Self>>;
@@ -230,6 +241,8 @@ decl_storage! {
         /// status transition from off-chain sWorker
         pub WorkReports get(fn work_reports):
             map hasher(twox_64_concat) SworkerAnchor => Option<WorkReport>;
+
+        pub LockBlock get(fn lock_block): map hasher(twox_64_concat) T::AccountId => Option<T::BlockNumber>;
 
         /// The current report slot block number, this value should be a multiple of report slot block.
         pub CurrentReportSlot get(fn current_report_slot): ReportSlot = 0;
@@ -315,7 +328,11 @@ decl_error! {
         /// Illegal work report. This should never happen.
         IllegalWorkReport,
         /// Code has not been expired
-        CodeNotExpired
+        CodeNotExpired,
+        ///Don't have enough balance to join group
+        InsufficientCurrency,
+        ///not allowed quit group
+        NotAllowedQuit
     }
 }
 
@@ -328,6 +345,12 @@ decl_module! {
 
         /// The max number of members in one group
         const MaxGroupSize: u32 = T::MaxGroupSize::get();
+
+        const Locks: BalanceOf<T> = T::Locks::get();
+
+        const Slash: BalanceOf<T> = T::Slash::get();
+
+        const LockPeriod: T::BlockNumber = T::LockPeriod::get();
 
         // Initializing events
         // this is needed only if you are using events in your module
@@ -755,19 +778,28 @@ decl_module! {
             // 6. Ensure who's wr's spower is zero
             ensure!(Self::work_reports(identity.anchor).unwrap_or_default().spower == 0, Error::<T>::IllegalSpower);
 
-            // 7. Join the group
+            //7.lock token
+            let slash = T::Slash::get();
+            let locks = T::Locks::get();
+            let free_balance = T::Currency::free_balance(&who);
+            //ensure!(slash.saturating_add(locks) < free_balance, Error::<T>::InsufficientCurrency);
+            slashing::do_slash::<T>(&who, slash);
+            T::Currency::set_lock(SWORK_ID, &who, locks, WithdrawReasons::all());
+            let now = <frame_system::Module<T>>::block_number();
+            <LockBlock<T>>::insert(&who, now);
+            // 8. Join the group
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.insert(who.clone());
                 group.allowlist.remove(&who);
             });
 
-            // 8. Mark the group owner
+            // 9. Mark the group owner
             <Identities<T>>::mutate(&who, |maybe_i| match *maybe_i {
                 Some(Identity { ref mut group, .. }) => *group = Some(owner.clone()),
                 None => {},
             });
 
-            // 9. Emit event
+            // 10. Emit event
             Self::deposit_event(RawEvent::JoinGroupSuccess(who, owner));
 
             Ok(())
@@ -798,6 +830,10 @@ decl_module! {
             });
 
             // 5. Quit the group
+            let since = <LockBlock<T>>::get(&who);
+            let now = <frame_system::Module<T>>::block_number();
+            ensure!(now - since.unwrap() > T::LockPeriod::get(), Error::<T>::NotAllowedQuit);
+            T::Currency::remove_lock(SWORK_ID,&who);
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.remove(&who);
             });
@@ -834,6 +870,7 @@ decl_module! {
             });
 
             // 5. Quit the group
+            T::Currency::remove_lock(SWORK_ID,&member);
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.remove(&member);
             });

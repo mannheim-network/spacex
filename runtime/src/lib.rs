@@ -699,18 +699,6 @@ impl balances::Config<balances::Instance1> for Runtime {
     type MaxLocks = MaxLocks;
 }
 
-parameter_types! {
-    pub const ClaimsModuleId: ModuleId = ModuleId(*b"crclaims");
-    pub Prefix: &'static [u8] = b"Pay CRUs to the Crust account:";
-}
-
-impl claims::Config for Runtime {
-    type ModuleId = ClaimsModuleId;
-    type Event = Event;
-    type Currency = Balances;
-    type Prefix = Prefix;
-}
-
 // TODO: better way to deal with fee(s)
 parameter_types! {
     pub const TransactionBaseFee: Balance = MILLICENTS / 100;
@@ -736,6 +724,9 @@ impl pallet_sudo::Config for Runtime {
 parameter_types! {
     pub const PunishmentSlots: u32 = 8; // 8 report slot == 8 hours
     pub const MaxGroupSize: u32 = 1000;
+    pub const Slash: Balance = 100 * DOLLARS;
+    pub const Locks: Balance = 1000 * DOLLARS;
+    pub const LockPeriod: BlockNumber = 30 * MINUTES;
 }
 
 impl swork::Config for Runtime {
@@ -745,6 +736,9 @@ impl swork::Config for Runtime {
     type Works = Staking;
     type MarketInterface = Market;
     type MaxGroupSize = MaxGroupSize;
+    type Slash = Slash;
+    type Locks = Locks;
+    type LockPeriod = LockPeriod;
     type BenefitInterface = Benefits;
     type WeightInfo = swork::weight::WeightInfo<Runtime>;
 }
@@ -806,17 +800,6 @@ impl benefits::Config for Runtime {
 }
 
 
-parameter_types! {
-    pub const UnlockPeriod: BlockNumber = 432_000; // 30 days
-}
-
-impl locks::Config for Runtime {
-    type Event = Event;
-    type Currency = Balances;
-    type UnlockPeriod = UnlockPeriod;
-    type WeightInfo = locks::weight::WeightInfo<Runtime>;
-}
-
 
 construct_runtime! {
     pub enum Runtime where
@@ -869,9 +852,7 @@ construct_runtime! {
         // Spacex modules
         Swork: swork::{Module, Call, Storage, Event<T>, Config<T>},
         Market: market::{Module, Call, Storage, Event<T>, Config},
-        Claims: claims::{Module, Call, Storage, Event<T>, ValidateUnsigned},
         Benefits: benefits::{Module, Call, Storage, Event<T>},
-        Locks: locks::{Module, Call, Storage, Config<T>, Event<T>},
 
         // Sudo. Last module. Usable initially, but removed once governance enabled.
         Sudo: pallet_sudo::{Module, Call, Storage, Config<T>, Event<T>},
@@ -1120,8 +1101,6 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, market, Market);
             add_benchmark!(params, batches, swork, SworkBench::<Runtime>);
             add_benchmark!(params, batches, benefits, Benefits);
-            // add_benchmark!(params, batches, csmlocking, CSMLocking);
-            add_benchmark!(params, batches, locks, Locks);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

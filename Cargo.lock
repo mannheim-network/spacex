@@ -1143,65 +1143,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cstrml-claims"
-version = "1.0.0"
-dependencies = [
- "cstrml-balances",
- "frame-support",
- "frame-system",
- "hex-literal",
- "parity-scale-codec",
- "rustc-hex",
- "serde",
- "serde_derive",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "cstrml-csm-locking"
-version = "1.0.0"
-dependencies = [
- "cst-primitives",
- "cstrml-balances",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-timestamp",
- "parity-scale-codec",
- "safe-mix",
- "serde",
- "sp-core",
- "sp-io",
- "sp-keyring",
- "sp-runtime",
- "sp-std",
- "substrate-test-utils",
-]
-
-[[package]]
-name = "cstrml-locks"
-version = "1.0.0"
-dependencies = [
- "cst-primitives",
- "cstrml-balances",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "hex-literal",
- "parity-scale-codec",
- "rustc-hex",
- "serde",
- "serde_derive",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "cstrml-market"
 version = "1.0.0"
 dependencies = [
@@ -7443,7 +7384,6 @@ name = "spacex"
 version = "1.2.0"
 dependencies = [
  "cst-primitives",
- "cstrml-locks",
  "cstrml-staking",
  "cstrml-swork",
  "frame-benchmarking",
@@ -7512,9 +7452,6 @@ dependencies = [
  "cst-primitives",
  "cstrml-balances",
  "cstrml-benefits",
- "cstrml-claims",
- "cstrml-csm-locking",
- "cstrml-locks",
  "cstrml-market",
  "cstrml-staking",
  "cstrml-swork",

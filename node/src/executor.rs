@@ -1,5 +1,5 @@
 // Copyright (C) 2019-2021 Mannheim Network Technologies Ltd.
-// This file is part of Crust.
+// This file is part of Mannheim.
 
 pub use sc_executor::NativeExecutor;
 use sc_executor::native_executor_instance;

@@ -48,7 +48,6 @@ frame-benchmarking = { git = "https://github.com/mannheim-network/substrate", re
 spacex-runtime = { path = "../runtime", version = "1.0.0" }
 cstrml-staking = { path = "../cstrml/staking", version = "1.0.0" }
 cstrml-swork = { path = "../cstrml/swork", version = "1.0.0" }
-cstrml-locks = { path = "../cstrml/locks", version = "1.0.0" }
 primitives = { package = "cst-primitives", path = "../primitives", version = "1.0.0" }
 spacex-rpc = { path =  "../rpc", version = "1.0.0" }
 

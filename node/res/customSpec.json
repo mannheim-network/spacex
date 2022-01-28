@@ -1,15 +1,15 @@
 {
-  "name": "Crust Rocky",
-  "id": "crust_rocky",
+  "name": "Spacex Rubik",
+  "id": "spacex_rubik",
   "chainType": "Live",
   "bootNodes": [
-    "/ip4/124.156.129.198/tcp/30333/p2p/12D3KooWKPLZBmkVFUfJTdZMYVwsg8WdHNQzEVkzCa43xoYuCJKk"
+
   ],
   "telemetryEndpoints": null,
-  "protocolId": "crurcky",
+  "protocolId": "rubik",
   "properties": {
     "tokenDecimals": 12,
-    "tokenSymbol": "CRU"
+    "tokenSymbol": "heim"
   },
   "consensusEngine": null,
   "lightSyncState": null,
