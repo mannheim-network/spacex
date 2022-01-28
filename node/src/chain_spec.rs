@@ -269,7 +269,7 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
         // 5DJnpPJAiq9fmaKNnDwG9323P68p8FBj9dSyprsBigZf84aS
         hex!["36fa5e3a775b5840fc039044c9eecda9d3ae6ba55a7a33c7be4a4e3aac3d0f70"].into(),
         // 5HT4Si96jrM6fN3ohfFRJrXn11CbDttNui2tsHaEvFjz1vsB
-        hex!["6d9484ac62fd60762acc9f37da9183398a47b3d867b4e798bf1730ba5e8e449b"].into(),
+        hex!["ee39de2f7678211e7cb72fec510de56d1f8a2d29dd9809f5b79c931db73c4b12"].into(),
         // 5DQ1X73256aGXLjfEEAjtQdD2JQLQGV8enTPFAd9WGozXwo3
         hex!["3af55aa368fa00254a85de996fe687faeac3387ce3859dbc7cabff18d3170833"].into(),
         // 5DoAgLJ7mrwDXxand6sL2XAYP15imWMYo8aehk9GXz8im71h
@@ -378,7 +378,7 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
             )).collect::<Vec<_>>(),
         }),
         staking: Some(StakingConfig {
-            validator_count: 4,
+            validator_count: 10,
             minimum_validator_count: 1,
             stakers: initial_authorities
                 .iter()
