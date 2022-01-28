@@ -268,14 +268,18 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
         hex!["9ac4ed83b7e8a71807536bf1a9cb0865bd419073993e7980489ca43dffa11046"].into(),
         // 5DJnpPJAiq9fmaKNnDwG9323P68p8FBj9dSyprsBigZf84aS
         hex!["36fa5e3a775b5840fc039044c9eecda9d3ae6ba55a7a33c7be4a4e3aac3d0f70"].into(),
-        // 5Gso9cGhiDDSeXHSuYmtxXYnT24dEYn1KLYJSVov7tRNBhcZ
-        hex!["d4db485333e494f8a4fb3252017ae39d07b5e83891b1b402ca9eac67af154346"].into(),
-        // 5FZtbMgrTAHvJ9KnMFLegueCJxq7LSLK8KoheTu1FBjsM6Dh
-        hex!["9af6f52d87127c53286c9dd15043b9f322bd935ac7316a2a7f2fb52c1eb884c2"].into(),
         // 5HT4Si96jrM6fN3ohfFRJrXn11CbDttNui2tsHaEvFjz1vsB
         hex!["6d9484ac62fd60762acc9f37da9183398a47b3d867b4e798bf1730ba5e8e449b"].into(),
         // 5DQ1X73256aGXLjfEEAjtQdD2JQLQGV8enTPFAd9WGozXwo3
-        hex!["3af55aa368fa00254a85de996fe687faeac3387ce3859dbc7cabff18d3170833"].into()
+        hex!["3af55aa368fa00254a85de996fe687faeac3387ce3859dbc7cabff18d3170833"].into(),
+        // 5DoAgLJ7mrwDXxand6sL2XAYP15imWMYo8aehk9GXz8im71h
+        hex!["4c9ed4a7a7ebd38e69cb50a8793706103b9fa1d1c3d891537f8f7d02fd672012"].into(),
+        // 5F48rNcU9AGFnS1pgmtyfvGGQgHZuA7jeJDLEcuDbkhcdtuY
+        hex!["84459866a19c7fadcf55599d17ba5031cfbd6fc7660e63b91d24c4deef6853f8"].into(),
+        // 5EqyBCbDWbp8Erxec7TauCeuxvUYaKiqmqAfEKsrM88b1wWA
+        hex!["7afe148732d7e363bd77e08cddd4a6cbf93cdd985e10942aba9c43ff799e747e"].into(),
+        // 5GfZ3ysS1KudB6B8mM45SmQfm73ZBx9itGTETLuHkmdFk8Si
+        hex!["cb84e201eb5e6333ec472e3284ed0343e8c4b4f81f60733d331fcb521242e1ef"].into(),
     ];
 
     // for i in 1; do for j in {stash, controller}; do subkey inspect "$SECRET//$i//$j"; done; done
