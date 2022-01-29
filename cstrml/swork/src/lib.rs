@@ -870,6 +870,7 @@ decl_module! {
             });
 
             // 5. Quit the group
+            T::Currency::remove_lock(SWORK_ID,&who);
             T::Currency::remove_lock(SWORK_ID,&member);
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.remove(&member);
