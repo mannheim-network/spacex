@@ -782,7 +782,7 @@ decl_module! {
             let slash = T::Slash::get();
             let locks = T::Locks::get();
             let free_balance = T::Currency::free_balance(&who);
-            //ensure!(slash.saturating_add(locks) < free_balance, Error::<T>::InsufficientCurrency);
+            ensure!(slash + locks < free_balance, Error::<T>::InsufficientCurrency);
             slashing::do_slash::<T>(&who, slash);
             T::Currency::set_lock(SWORK_ID, &who, locks, WithdrawReasons::all());
             let now = <frame_system::Module<T>>::block_number();
