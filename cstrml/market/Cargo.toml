@@ -14,16 +14,16 @@ serde = { optional = true, version = "1.0.116" }
 serde_json = "1.0.51"
 
 # substrate frames
-frame-system = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+frame-system = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
+frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 
 # substrate primitives
-sp-core = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-io = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-core = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
+sp-io = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
+sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
+sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 
-frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/mannheim-network/substrate" }
 
 # Mannheim runtime modules
 primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
@@ -50,4 +50,4 @@ hex = "0.4.2"
 swork = { package = "cstrml-swork", path = "../swork" }
 balances = { package = "cstrml-balances", path = "../balances" }
 primitives = { package = "cst-primitives", path = "../../primitives", features = ["test"] }
-frame-benchmarking = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+frame-benchmarking = { git = "https://github.com/mannheim-network/substrate"}

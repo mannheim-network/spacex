@@ -2037,7 +2037,7 @@ impl<T: Config> Module<T> {
 
                 // 3. Split the payout for staking and authoring
                 let num_of_validators = Self::current_elected().len();
-                let total_authoring_payout = Self::get_authoring_and_staking_reward_ratio(num_of_validators as u32) * total_payout;
+                let total_authoring_payout = Perbill::from_percent(18) * total_payout;
                 let total_staking_payout = total_payout.saturating_sub(total_authoring_payout);
 
                 // 4. Block authoring payout
@@ -2378,7 +2378,7 @@ impl<T: Config> Module<T> {
         elected_stashes
     }
 
-    pub fn get_authoring_and_staking_reward_ratio(num_of_validators: u32) -> Perbill {
+    /*pub fn get_authoring_and_staking_reward_ratio(num_of_validators: u32) -> Perbill {
         match num_of_validators {
             0 ..= 500 => Perbill::from_percent(20),
             501 ..= 1000 => Perbill::from_percent(25),
@@ -2386,7 +2386,7 @@ impl<T: Config> Module<T> {
             2501 ..= 5000 => Perbill::from_percent(40),
             5001 ..= u32::MAX => Perbill::from_percent(50),
         }
-    }
+    }*/
 
     // fn shuffle_candidates(candidates_stakes: &mut Vec<(T::AccountId, u128)>) {
     //     // 1. Construct random seed, 👼 bless the randomness

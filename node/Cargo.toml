@@ -19,30 +19,30 @@ structopt = { optional = true, version = "0.3.21" }
 hex-literal = "0.3.1"
 
 # substrate client dependencies
-authority-discovery = { package = "sc-authority-discovery", git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-finality-grandpa  = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-basic-authorship = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-client-api = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sc-cli = { features = ["wasmtime"], optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-consensus = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-consensus-slots = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-executor = { features = ["wasmtime"], git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-network = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-service = { features = ["wasmtime"], git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-transaction-pool = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+authority-discovery = { package = "sc-authority-discovery", git = "https://github.com/mannheim-network/substrate" }
+sc-consensus-babe = { git = "https://github.com/mannheim-network/substrate" }
+sc-finality-grandpa  = { git = "https://github.com/mannheim-network/substrate" }
+sc-basic-authorship = { git = "https://github.com/mannheim-network/substrate" }
+sc-client-api = { git = "https://github.com/mannheim-network/substrate"}
+sc-cli = { features = ["wasmtime"], optional = true, git = "https://github.com/mannheim-network/substrate" }
+sc-consensus = { git = "https://github.com/mannheim-network/substrate" }
+sc-consensus-slots = { git = "https://github.com/mannheim-network/substrate" }
+sc-executor = { features = ["wasmtime"], git = "https://github.com/mannheim-network/substrate" }
+sc-network = { git = "https://github.com/mannheim-network/substrate" }
+sc-service = { features = ["wasmtime"], git = "https://github.com/mannheim-network/substrate" }
+sc-transaction-pool = { git = "https://github.com/mannheim-network/substrate"}
 
 # substrate primitives
-sp-transaction-pool = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-core = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-consensus = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-inherents = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-io = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-runtime = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-finality-grandpa = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-frame-benchmarking-cli = { optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-frame-benchmarking = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sp-transaction-pool = { git = "https://github.com/mannheim-network/substrate"}
+sp-core = { git = "https://github.com/mannheim-network/substrate"}
+sp-consensus = { git = "https://github.com/mannheim-network/substrate" }
+sp-consensus-babe = { git = "https://github.com/mannheim-network/substrate" }
+sp-inherents = { git = "https://github.com/mannheim-network/substrate"}
+sp-io = { git = "https://github.com/mannheim-network/substrate"}
+sp-runtime = { git = "https://github.com/mannheim-network/substrate"}
+sp-finality-grandpa = { git = "https://github.com/mannheim-network/substrate"}
+frame-benchmarking-cli = { optional = true, git = "https://github.com/mannheim-network/substrate" }
+frame-benchmarking = { git = "https://github.com/mannheim-network/substrate"}
 
 # spacex runtime modules
 spacex-runtime = { path = "../runtime", version = "1.0.0" }
@@ -52,8 +52,8 @@ primitives = { package = "cst-primitives", path = "../primitives", version = "1.
 spacex-rpc = { path =  "../rpc", version = "1.0.0" }
 
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-frame-benchmarking-cli = { optional = true, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+substrate-build-script-utils = { git = "https://github.com/mannheim-network/substrate"}
+frame-benchmarking-cli = { optional = true, git = "https://github.com/mannheim-network/substrate" }
 
 [features]
 default = [ "cli" ]

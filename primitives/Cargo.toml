@@ -13,10 +13,10 @@ serde = { optional = true, features = ["derive"], version = "1.0.116" }
 parity-scale-codec = { default-features = false, features = ["bit-vec", "derive"], version = "2.0.0" }
 
 # substrate primitives
-sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-core = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
+sp-runtime = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
+sp-core = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
+sp-std = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
+frame-support = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 
 [features]
 default = ["std"]

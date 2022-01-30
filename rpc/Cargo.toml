@@ -9,29 +9,29 @@ repository = "https://github.com/mannheim-network/spacex/"
 
 [dependencies]
 jsonrpc-core = "15.1.0"
-frame-rpc-system = { package = "substrate-frame-rpc-system", git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"  }
+frame-rpc-system = { package = "substrate-frame-rpc-system", git = "https://github.com/mannheim-network/substrate"  }
 codec = { default-features = false, package = "parity-scale-codec", version = "2.0.0" }
 
 # substrate client dependencies
-sc-client-api = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sc-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sc-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-consensus-babe-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-consensus-epochs = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-finality-grandpa = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-finality-grandpa-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sc-keystore = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sc-client-api = { git = "https://github.com/mannheim-network/substrate"}
+sc-rpc = { git = "https://github.com/mannheim-network/substrate"}
+sc-consensus-babe = { git = "https://github.com/mannheim-network/substrate" }
+sc-consensus-babe-rpc = { git = "https://github.com/mannheim-network/substrate" }
+sc-consensus-epochs = { git = "https://github.com/mannheim-network/substrate" }
+sc-finality-grandpa = { git = "https://github.com/mannheim-network/substrate" }
+sc-finality-grandpa-rpc = { git = "https://github.com/mannheim-network/substrate" }
+sc-keystore = { git = "https://github.com/mannheim-network/substrate"}
 
 # substrate pallet dependencies
-sp-keystore = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-blockchain = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-runtime = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-api = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-consensus = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-sp-consensus-babe = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-txpool-api = { package = "sp-transaction-pool", git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366" }
-pallet-transaction-payment-rpc = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
-sp-block-builder = { git = "https://github.com/mannheim-network/substrate", rev = "20218e0596d4b7b8237226c923fa7fc2b6932366"}
+sp-keystore = { git = "https://github.com/mannheim-network/substrate" }
+sp-blockchain = { git = "https://github.com/mannheim-network/substrate"}
+sp-runtime = { git = "https://github.com/mannheim-network/substrate"}
+sp-api = { git = "https://github.com/mannheim-network/substrate"}
+sp-consensus = { git = "https://github.com/mannheim-network/substrate" }
+sp-consensus-babe = { git = "https://github.com/mannheim-network/substrate" }
+txpool-api = { package = "sp-transaction-pool", git = "https://github.com/mannheim-network/substrate" }
+pallet-transaction-payment-rpc = { git = "https://github.com/mannheim-network/substrate"}
+sp-block-builder = { git = "https://github.com/mannheim-network/substrate"}
 
 # Mannheim dependent
 spacex-primitives = { package = "cst-primitives", path="../primitives", version = "1.0.0" }

@@ -77,8 +77,8 @@ pub fn development_config() -> Result<SpacexChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or("Local test wasm not available")?;
 
     Ok(SpacexChainSpec::from_genesis(
-        "Development",
-        "dev",
+        "Rubik",
+        "rubik",
         ChainType::Development,
         move || testnet_genesis(
             wasm_binary,
@@ -109,8 +109,8 @@ pub fn local_testnet_config() -> Result<SpacexChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or("Local test wasm not available")?;
 
     Ok(SpacexChainSpec::from_genesis(
-        "Local Testnet",
-        "local_testnet",
+        "Rubik",
+        "rubik",
         ChainType::Local,
         move || testnet_genesis(
             wasm_binary,
