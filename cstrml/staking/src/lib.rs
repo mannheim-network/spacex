@@ -2079,7 +2079,7 @@ impl<T: Config> Module<T> {
     fn total_rewards_in_era(active_era: EraIndex) -> BalanceOf<T> {
         // 1. Has not start rewarding yet
         if active_era < Self::start_reward_era() { return Zero::zero(); }
-        let maybe_rewards_this_quarter = FIRST_QUARTER_REWARDS * (Self::start_reward_era() % 90 * 2 / 100) as u128;
+        let maybe_rewards_this_quarter = FIRST_QUARTER_REWARDS- FIRST_QUARTER_REWARDS * Self::start_reward_era() / 90 * 2 / 100 as u128;
 
         // Milliseconds per quarter
         const MILLISECONDS_PER_QUARTER: u64 = 1000 * 3600 * 24 * 90 / 100;
