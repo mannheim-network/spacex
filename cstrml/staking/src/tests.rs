@@ -316,7 +316,7 @@ fn rewards_should_work() {
             let mut block = 3; // Block 3 => Session 1 => Era 0
             Staking::on_finalize(System::block_number());
             System::set_block_number(block);
-            Timestamp::set_timestamp(block * 5000); // on time.
+            Timestamp::set_timestamp(block * 3000); // on time.
             Session::on_initialize(System::block_number());
             assert_eq!(Staking::current_era().unwrap_or(0), 0);
             assert_eq!(Session::current_index(), 1);
@@ -327,6 +327,7 @@ fn rewards_should_work() {
 
             // Compute total payout now for whole duration as other parameter won't change
             let staking_reward = staking_rewards_in_era(Staking::current_era().unwrap_or(0));
+            println!("{}", staking_reward);
             let authoring_reward = authoring_rewards_in_era(Staking::current_era().unwrap_or(0));
             assert_eq!(Staking::eras_total_stakes(0), 2001);
             assert_eq!(Balances::total_balance(&2), init_balance_2);
