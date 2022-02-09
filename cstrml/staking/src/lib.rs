@@ -512,7 +512,7 @@ decl_storage! {
         HistoryDepth get(fn history_depth) config(): u32 = 84;
 
         /// Start era for reward curve
-        StartRewardEra get(fn start_reward_era) config(): EraIndex = 100000;
+        StartRewardEra get(fn start_reward_era) config(): EraIndex = 8;
 
         /// Map from all locked "stash" accounts to the controller account.
         pub Bonded get(fn bonded): map hasher(twox_64_concat) T::AccountId => Option<T::AccountId>;
@@ -2036,9 +2036,9 @@ impl<T: Config> Module<T> {
                 total_payout = total_payout.saturating_sub(used_fee);
 
                 // 3. Split the payout for staking and authoring
-                let num_of_validators = Self::current_elected().len();
                 let total_authoring_payout = Perbill::from_percent(18) * total_payout;
-                let total_staking_payout = total_payout.saturating_sub(total_authoring_payout);
+                let rest = Perbill::from_percent(5) * total_payout;
+                let total_staking_payout = total_payout.saturating_sub(total_authoring_payout).saturating_sub(rest);
 
                 // 4. Block authoring payout
                 for (v, p) in points.individual.iter() {
@@ -2058,7 +2058,7 @@ impl<T: Config> Module<T> {
                 // TODO: enable treasury and might bring this back
                 // T::Reward::on_unbalanced(total_imbalance);
                 // This is not been used
-                // T::RewardRemainder::on_unbalanced(T::Currency::issue(rest));
+                T::RewardRemainder::on_unbalanced(T::Currency::issue(rest));
             }
         }
     }

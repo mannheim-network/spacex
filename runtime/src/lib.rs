@@ -411,7 +411,7 @@ impl staking::Config for Runtime {
     type UnixTime = Timestamp;
 
     type CurrencyToVote = CurrencyToVoteHandler;
-    type RewardRemainder = ();
+    type RewardRemainder = Treasury;
     type Event = Event;
     type Slash = Treasury;
     type Reward = ();
