@@ -262,6 +262,9 @@ impl<AID> BenefitInterface<AID, BalanceOf<Test>, NegativeImbalanceOf<Test>> for 
 parameter_types! {
     pub const PunishmentSlots: u32 = 1;
     pub const MaxGroupSize: u32 = 100;
+    pub const Slash: Balance = 100 * DOLLARS;
+    pub const Locks: Balance = 1000 * DOLLARS;
+    pub const LockPeriod: BlockNumber = (30 * MINUTES) as u64;
 }
 
 impl swork::Config for Test {
@@ -271,6 +274,9 @@ impl swork::Config for Test {
     type Works = TestStaking;
     type MarketInterface = TestStaking;
     type MaxGroupSize = MaxGroupSize;
+    type Slash = Slash;
+    type Locks = Locks;
+    type LockPeriod = LockPeriod;
     type BenefitInterface = TestBenefitInterface;
     type WeightInfo = swork::weight::WeightInfo<Test>;
 }
@@ -769,6 +775,7 @@ pub fn authoring_rewards_in_era(era_index: EraIndex) -> BalanceOf<Test> {
 
 pub fn staking_rewards_in_era(era_index: EraIndex) -> BalanceOf<Test> {
     let total_reward = Staking::total_rewards_in_era(era_index);
+    println!("{}", total_reward);
     let authoring_reward = authoring_rewards_in_era(era_index);
     total_reward.saturating_sub(authoring_reward)
 }

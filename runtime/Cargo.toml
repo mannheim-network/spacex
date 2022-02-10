@@ -77,7 +77,7 @@ pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = "
 balances = { package = "cstrml-balances", path = "../cstrml/balances", default-features = false, version = "1.0.0" }
 market = { package = "cstrml-market", path = "../cstrml/market", default-features = false, version = "1.0.0" }
 primitives = { package = "cst-primitives", path = "../primitives", default-features = false, version = "1.0.0" }
-swork = { package = "cstrml-swork", path = "../cstrml/swork", default-features = false, version = "1.0.0" }
+storage = { package = "cstrml-swork", path = "../cstrml/swork", default-features = false, version = "1.0.0" }
 staking = { package = "cstrml-staking", path = "../cstrml/staking", default-features = false, version = "1.0.0" }
 benefits = { package = "cstrml-benefits", path = "../cstrml/benefits", default-features = false, version = "1.0.0" }
 
@@ -128,7 +128,7 @@ std = [
     "pallet-multisig/std",
     "staking/std",
     "pallet-sudo/std",
-    "swork/std",
+    "storage/std",
     "benefits/std",
     "frame-system/std",
     "frame-system-rpc-runtime-api/std",

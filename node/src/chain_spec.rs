@@ -6,7 +6,8 @@ use sp_core::{Pair, Public, sr25519, crypto::UncheckedInto};
 use spacex_runtime::{
     AuthorityDiscoveryId, BalancesConfig, GenesisConfig, ImOnlineId,
     AuthorityDiscoveryConfig, SessionConfig, SessionKeys, StakerStatus,
-    StakingConfig, IndicesConfig, SystemConfig, SworkConfig, SudoConfig,
+    StakingConfig, IndicesConfig, SystemConfig, StorageConfig, SudoConfig,
+    CouncilConfig, DemocracyConfig, ElectionsConfig, TechnicalCommitteeConfig,
     WASM_BINARY
 };
 use cstrml_staking::Forcing;
@@ -161,7 +162,7 @@ pub fn rubik_staging_config() -> Result<SpacexChainSpec, String> {
         "Rubik",
         "rubik",
         ChainType::Live,
-        move || rocky_staging_testnet_config_genesis(wasm_binary),
+        move || rubik_staging_testnet_config_genesis(wasm_binary),
         vec![],
         None,
         Some(DEFAULT_PROTOCOL_ID),
@@ -202,6 +203,7 @@ fn testnet_genesis(
     endowed_accounts: Vec<AccountId>,
     _enable_println: bool,
 ) -> GenesisConfig {
+    let num_endowed_accounts = endowed_accounts.len();
     const ENDOWMENT: u128 = 1_000_000 * HEIM;
     const STASH: u128 = 20_000 * HEIM;
     GenesisConfig {
@@ -246,6 +248,23 @@ fn testnet_genesis(
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         }),
+        pallet_democracy: Some(DemocracyConfig::default()),
+        pallet_elections_phragmen: Some(ElectionsConfig {
+            members: endowed_accounts.iter()
+                .take((num_endowed_accounts + 1) / 2)
+                .cloned()
+                .map(|member| (member, STASH))
+                .collect(),
+        }),
+        pallet_collective_Instance1: Some(CouncilConfig::default()),
+        pallet_collective_Instance2: Some(TechnicalCommitteeConfig {
+            members: endowed_accounts.iter()
+                .take((num_endowed_accounts + 1) / 2)
+                .cloned()
+                .collect(),
+            phantom: Default::default(),
+        }),
+        pallet_membership_Instance1: Some(Default::default()),
         market: Some(Default::default()),
         pallet_babe: Some(Default::default()),
         pallet_grandpa: Some(Default::default()),
@@ -253,7 +272,7 @@ fn testnet_genesis(
         pallet_authority_discovery: Some(AuthorityDiscoveryConfig {
             keys: vec![]
         }),
-        swork: Some(SworkConfig {
+        storage: Some(StorageConfig {
             init_codes: vec![]
         }),
         pallet_treasury: Some(Default::default()),
@@ -261,7 +280,7 @@ fn testnet_genesis(
 }
 
 /// The genesis spec of spacex rocky test network
-fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
+fn rubik_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
     // subkey inspect "$SECRET"
     let endowed_accounts: Vec<AccountId> = vec![
         // 5FZdjMwHfF3aXbvasamC91xDdj6PvF76rT8KywEpwHB1FuTj
@@ -347,7 +366,7 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
            // 5Cth6WcUmy2ZMFUthwi1YqGyDHuWs1qPFnQL82xWrD9QohKJ
            hex!["2499376e7db1c15be07b187f8a34d858b0bd4edd91b12c3f7570de95b4c0d900"].unchecked_into(),
        )];
-
+    let num_endowed_accounts = endowed_accounts.len();
     // Constants
     const ENDOWMENT: u128 = 2_500_000 * HEIM;
     const STASH: u128 = 1_250_000 * HEIM;
@@ -389,6 +408,23 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         }),
+        pallet_democracy: Some(DemocracyConfig::default()),
+        pallet_elections_phragmen: Some(ElectionsConfig {
+            members: endowed_accounts.iter()
+                .take((num_endowed_accounts + 1) / 2)
+                .cloned()
+                .map(|member| (member, STASH))
+                .collect(),
+        }),
+        pallet_collective_Instance1: Some(CouncilConfig::default()),
+        pallet_collective_Instance2: Some(TechnicalCommitteeConfig {
+            members: endowed_accounts.iter()
+                .take((num_endowed_accounts + 1) / 2)
+                .cloned()
+                .collect(),
+            phantom: Default::default(),
+        }),
+        pallet_membership_Instance1: Some(Default::default()),
         market: Some(Default::default()),
         pallet_babe: Some(Default::default()),
         pallet_grandpa: Some(Default::default()),
@@ -396,7 +432,7 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
         pallet_authority_discovery: Some(AuthorityDiscoveryConfig {
             keys: vec![]
         }),
-        swork: Some(SworkConfig {
+        storage: Some(StorageConfig {
             init_codes: vec![]
         }),
         pallet_treasury: Some(Default::default()),
@@ -439,7 +475,7 @@ fn mainnet_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
         // cTMKoe6bJL1Wud7w9z2mTW1nQwJFspudz68H7W8K1TSXFzzhw --sr25519
         hex!["1c37d81ef1ebfc2953216a566cf490c7d53db3adaa4aeab15acc4ca2d6577a1d"].unchecked_into(),
     )];
-
+    let num_endowed_accounts = endowed_accounts.len();
     // Constants
     const ENDOWMENT: u128 = 10 * HEIM;
     const STASH: u128 = 10 * HEIM;
@@ -481,6 +517,23 @@ fn mainnet_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         }),
+        pallet_democracy: Some(DemocracyConfig::default()),
+        pallet_elections_phragmen: Some(ElectionsConfig {
+            members: endowed_accounts.iter()
+                .take((num_endowed_accounts + 1) / 2)
+                .cloned()
+                .map(|member| (member, STASH))
+                .collect(),
+        }),
+        pallet_collective_Instance1: Some(CouncilConfig::default()),
+        pallet_collective_Instance2: Some(TechnicalCommitteeConfig {
+            members: endowed_accounts.iter()
+                .take((num_endowed_accounts + 1) / 2)
+                .cloned()
+                .collect(),
+            phantom: Default::default(),
+        }),
+        pallet_membership_Instance1: Some(Default::default()),
         market: Some(Default::default()),
         pallet_babe: Some(Default::default()),
         pallet_grandpa: Some(Default::default()),
@@ -488,7 +541,7 @@ fn mainnet_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
         pallet_authority_discovery: Some(AuthorityDiscoveryConfig {
             keys: vec![]
         }),
-        swork: Some(SworkConfig {
+        storage: Some(StorageConfig {
             init_codes: vec![]
         }),
         pallet_treasury: Some(Default::default()),

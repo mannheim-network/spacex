@@ -512,7 +512,7 @@ decl_storage! {
         HistoryDepth get(fn history_depth) config(): u32 = 84;
 
         /// Start era for reward curve
-        StartRewardEra get(fn start_reward_era) config(): EraIndex = 100000;
+        StartRewardEra get(fn start_reward_era) config(): EraIndex = 8;
 
         /// Map from all locked "stash" accounts to the controller account.
         pub Bonded get(fn bonded): map hasher(twox_64_concat) T::AccountId => Option<T::AccountId>;
@@ -2036,7 +2036,6 @@ impl<T: Config> Module<T> {
                 total_payout = total_payout.saturating_sub(used_fee);
 
                 // 3. Split the payout for staking and authoring
-                let num_of_validators = Self::current_elected().len();
                 let total_authoring_payout = Perbill::from_percent(18) * total_payout;
                 let total_staking_payout = total_payout.saturating_sub(total_authoring_payout);
 
@@ -2058,7 +2057,7 @@ impl<T: Config> Module<T> {
                 // TODO: enable treasury and might bring this back
                 // T::Reward::on_unbalanced(total_imbalance);
                 // This is not been used
-                // T::RewardRemainder::on_unbalanced(T::Currency::issue(rest));
+                //T::RewardRemainder::on_unbalanced(T::Currency::issue(rest));
             }
         }
     }
@@ -2079,10 +2078,10 @@ impl<T: Config> Module<T> {
     fn total_rewards_in_era(active_era: EraIndex) -> BalanceOf<T> {
         // 1. Has not start rewarding yet
         if active_era < Self::start_reward_era() { return Zero::zero(); }
-        let maybe_rewards_this_quarter = FIRST_QUARTER_REWARDS- FIRST_QUARTER_REWARDS * Self::start_reward_era() as u128 / 90 * 2 / 100;
+        let maybe_rewards_this_quarter = FIRST_QUARTER_REWARDS- FIRST_QUARTER_REWARDS * (Self::start_reward_era() as u128 / 360) * 2 / 100;
 
         // Milliseconds per quarter
-        const MILLISECONDS_PER_QUARTER: u64 = 1000 * 3600 * 24 * 90 / 100;
+        const MILLISECONDS_PER_QUARTER: u64 = 1000 * 3600 * 24 * 90;
         //  (90d * 24h * 3600s * 1000ms) / (millisecs_in_era = block_time * blocks_num_in_era)
         let quarter_in_eras = MILLISECONDS_PER_QUARTER / MILLISECS_PER_BLOCK / (EPOCH_DURATION_IN_BLOCKS * T::SessionsPerEra::get()) as u64;
 
@@ -2347,6 +2346,16 @@ impl<T: Config> Module<T> {
         match ForceEra::get() {
             Forcing::ForceAlways | Forcing::ForceNew => (),
             _ => ForceEra::put(Forcing::ForceNew),
+        }
+    }
+
+    pub fn get_authoring_and_staking_reward_ratio(num_of_validators: u32) -> Perbill {
+        match num_of_validators {
+            0 ..= 500 => Perbill::from_percent(20),
+            501 ..= 1000 => Perbill::from_percent(25),
+            1001 ..= 2500 => Perbill::from_percent(30),
+            2501 ..= 5000 => Perbill::from_percent(40),
+            5001 ..= u32::MAX => Perbill::from_percent(50),
         }
     }
 
