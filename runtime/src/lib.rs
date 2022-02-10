@@ -729,7 +729,7 @@ parameter_types! {
     pub const LockPeriod: BlockNumber = 30 * MINUTES;
 }
 
-impl swork::Config for Runtime {
+impl storage::Config for Runtime {
     type Currency = Balances;
     type Event = Event;
     type PunishmentSlots = PunishmentSlots;
@@ -740,7 +740,7 @@ impl swork::Config for Runtime {
     type Locks = Locks;
     type LockPeriod = LockPeriod;
     type BenefitInterface = Benefits;
-    type WeightInfo = swork::weight::WeightInfo<Runtime>;
+    type WeightInfo = storage::weight::WeightInfo<Runtime>;
 }
 
 parameter_types! {
@@ -764,7 +764,7 @@ impl market::Config for Runtime {
     /// The market's module id, used for deriving its sovereign account ID.
     type ModuleId = MarketModuleId;
     type Currency = Balances;
-    type SworkerInterface = Swork;
+    type SworkerInterface = Storage;
     type BenefitInterface = Benefits;
     type Event = Event;
     /// File duration.
@@ -850,7 +850,7 @@ construct_runtime! {
         Identity: pallet_identity::{Module, Call, Storage, Event<T>},
 
         // Spacex modules
-        Swork: swork::{Module, Call, Storage, Event<T>, Config<T>},
+        Storage: storage::{Module, Call, Storage, Event<T>, Config<T>},
         Market: market::{Module, Call, Storage, Event<T>, Config},
         Benefits: benefits::{Module, Call, Storage, Event<T>},
 
@@ -1099,7 +1099,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, staking, Staking);
             add_benchmark!(params, batches, market, Market);
-            add_benchmark!(params, batches, swork, SworkBench::<Runtime>);
+            add_benchmark!(params, batches, storage, SworkBench::<Runtime>);
             add_benchmark!(params, batches, benefits, Benefits);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }

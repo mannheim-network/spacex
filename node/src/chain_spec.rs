@@ -6,7 +6,7 @@ use sp_core::{Pair, Public, sr25519, crypto::UncheckedInto};
 use spacex_runtime::{
     AuthorityDiscoveryId, BalancesConfig, GenesisConfig, ImOnlineId,
     AuthorityDiscoveryConfig, SessionConfig, SessionKeys, StakerStatus,
-    StakingConfig, IndicesConfig, SystemConfig, SworkConfig, SudoConfig,
+    StakingConfig, IndicesConfig, SystemConfig, StorageConfig, SudoConfig,
     WASM_BINARY
 };
 use cstrml_staking::Forcing;
@@ -253,7 +253,7 @@ fn testnet_genesis(
         pallet_authority_discovery: Some(AuthorityDiscoveryConfig {
             keys: vec![]
         }),
-        swork: Some(SworkConfig {
+        storage: Some(StorageConfig {
             init_codes: vec![]
         }),
         pallet_treasury: Some(Default::default()),
@@ -396,7 +396,7 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
         pallet_authority_discovery: Some(AuthorityDiscoveryConfig {
             keys: vec![]
         }),
-        swork: Some(SworkConfig {
+        storage: Some(StorageConfig {
             init_codes: vec![]
         }),
         pallet_treasury: Some(Default::default()),
@@ -488,7 +488,7 @@ fn mainnet_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
         pallet_authority_discovery: Some(AuthorityDiscoveryConfig {
             keys: vec![]
         }),
-        swork: Some(SworkConfig {
+        storage: Some(StorageConfig {
             init_codes: vec![]
         }),
         pallet_treasury: Some(Default::default()),

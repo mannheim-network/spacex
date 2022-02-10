@@ -2037,8 +2037,7 @@ impl<T: Config> Module<T> {
 
                 // 3. Split the payout for staking and authoring
                 let total_authoring_payout = Perbill::from_percent(18) * total_payout;
-                let rest = Perbill::from_percent(5) * total_payout;
-                let total_staking_payout = total_payout.saturating_sub(total_authoring_payout).saturating_sub(rest);
+                let total_staking_payout = total_payout.saturating_sub(total_authoring_payout);
 
                 // 4. Block authoring payout
                 for (v, p) in points.individual.iter() {
@@ -2058,7 +2057,7 @@ impl<T: Config> Module<T> {
                 // TODO: enable treasury and might bring this back
                 // T::Reward::on_unbalanced(total_imbalance);
                 // This is not been used
-                T::RewardRemainder::on_unbalanced(T::Currency::issue(rest));
+                //T::RewardRemainder::on_unbalanced(T::Currency::issue(rest));
             }
         }
     }
