@@ -66,7 +66,7 @@ function build_bin {
   echo_c 33 "Using build dir: $BUILD_DIR"
 
   log_success "Preparing docker build image, running docker pull"
-  docker pull mannheimnetwork/spacex-env:${TOOLCHAIN_VER}
+  docker pull mannheimworld/spacex-env:${TOOLCHAIN_VER}
   if [ $? -ne 0 ]; then
     echo "Failed to pull docker image."
     exit 1
@@ -91,7 +91,7 @@ function build_bin {
   CMD="$CMD cargo build --release;"
 
   log_info "Building command: $CMD"
-  docker run --workdir /opt/spacex --cidfile $CIDFILE -i -t --env CARGO_HOME=/opt/cache $RUN_OPTS mannheim/spacex-env:${TOOLCHAIN_VER} /bin/bash -c "$CMD"
+  docker run --workdir /opt/spacex --cidfile $CIDFILE -i -t --env CARGO_HOME=/opt/cache $RUN_OPTS mannheimworld/spacex-env:${TOOLCHAIN_VER} /bin/bash -c "$CMD"
   CID=`cat $CIDFILE`
   log_info "Cleanup temp container $CID"
   docker rm $CID
