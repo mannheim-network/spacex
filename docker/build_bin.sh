@@ -66,7 +66,7 @@ function build_bin {
   echo_c 33 "Using build dir: $BUILD_DIR"
 
   log_success "Preparing docker build image, running docker pull"
-  docker pull mannheim/spacex-env:${TOOLCHAIN_VER}
+  docker pull mannheimnetwork/spacex-env:${TOOLCHAIN_VER}
   if [ $? -ne 0 ]; then
     echo "Failed to pull docker image."
     exit 1
