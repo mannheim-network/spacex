@@ -48,8 +48,8 @@ sudo yum -y install clang
 ### 🐳 Dockerize
 
 ```
-docker pull mannheimnetwork/spacex:rubik
-docker run -v /tmp/spacex:/tmp/spacex --network host mannheimnetwork/spacex:rubik   ./spacex --base-path /tmp/chain --chain rubik [more_options]
+docker pull mannheimworld/spacex:rubik
+docker run -v /tmp/spacex:/tmp/spacex --network host mannheimworld/spacex:rubik   ./spacex --base-path /tmp/chain --chain rubik [more_options]
 ```
 ## ⛰ Live Network
 
