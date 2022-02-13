@@ -33,7 +33,7 @@ source $DIR/utils.sh
 BUILD_DIR="`pwd`"
 DIST_FILE="target/release/spacex"
 SPACEX_VER=`head -n 10 node/Cargo.toml|awk '/version/{print $3}' |sed  s"/\"//g"`
-IMAGEID="Mannheim/spacex:${SPACEX_VER}"
+IMAGEID="mannheimworld/spacex:${SPACEX_VER}"
 
 if [ ! -f "$DIST_FILE" ]; then
     log_err "Binary from $DIST_FILE doesn't exist, please build spacex binary first."

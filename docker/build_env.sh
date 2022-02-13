@@ -30,7 +30,7 @@ while getopts ":hp" opt; do
 done
 
 TOOLCHAIN_VER="`cat docker/rust-toolchain`"
-IMAGEID="mannheim/spacex-env:${TOOLCHAIN_VER}"
+IMAGEID="mannheimworld/spacex-env:${TOOLCHAIN_VER}"
 
 docker build docker/spacex-env --build-arg TOOLCHAIN="${TOOLCHAIN_VER}" -t $IMAGEID
 
