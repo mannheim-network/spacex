@@ -368,7 +368,7 @@ fn rubik_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
        )];
     let num_endowed_accounts = endowed_accounts.len();
     // Constants
-    const ENDOWMENT: u128 = 2_500_000 * HEIM;
+    const ENDOWMENT: u128 = 125_000_000 * HEIM;
     const STASH: u128 = 1_250_000 * HEIM;
 
     GenesisConfig {
