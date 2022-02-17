@@ -27,6 +27,8 @@ pub trait SworkerInterface<AccountId> {
 	fn get_added_files_count_and_clear_record() -> u32;
 	// Get owner of this member
 	fn get_owner(who: &AccountId) -> Option<AccountId>;
+	// Get members of this owner
+	fn get_members(who: &AccountId) -> Option<BTreeSet<AccountId>>;
 }
 
 /// Means for interacting with a specialized version of the `market` trait.
@@ -53,8 +55,4 @@ pub trait BenefitInterface<AccountId, Balance, NegativeImbalance> {
 	fn get_collateral_and_reward(who: &AccountId) -> (Balance, Balance);
 
 	fn get_market_funds_ratio(who: &AccountId) -> Perbill;
-}
-
-pub trait LocksInterface<AccountId, Balance> {
-	fn create_cru18_lock(who: &AccountId, value: Balance);
 }

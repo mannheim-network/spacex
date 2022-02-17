@@ -170,6 +170,11 @@ impl<T: Config> SworkerInterface<T::AccountId> for Module<T> {
     fn get_owner(who: &T::AccountId) -> Option<T::AccountId> {
         Self::identities(who).unwrap_or_default().group
     }
+
+    /// Get members of this owner
+    fn get_members(who: &T::AccountId) -> Option<BTreeSet<T::AccountId>> {
+        Some(Self::groups(who).allowlist)
+    }
 }
 
 /// The module's configuration trait.
@@ -779,14 +784,14 @@ decl_module! {
             ensure!(Self::work_reports(identity.anchor).unwrap_or_default().spower == 0, Error::<T>::IllegalSpower);
 
             //7.lock token
-            let slash = T::Slash::get();
-            let locks = T::Locks::get();
-            let free_balance = T::Currency::free_balance(&who);
-            ensure!(slash + locks < free_balance, Error::<T>::InsufficientCurrency);
-            slashing::do_slash::<T>(&who, slash);
-            T::Currency::set_lock(SWORK_ID, &who, locks, WithdrawReasons::all());
-            let now = <frame_system::Module<T>>::block_number();
-            <LockBlock<T>>::insert(&who, now);
+            // let slash = T::Slash::get();
+            // let locks = T::Locks::get();
+            // let free_balance = T::Currency::free_balance(&who);
+            // ensure!(slash + locks < free_balance, Error::<T>::InsufficientCurrency);
+            // slashing::do_slash::<T>(&who, slash);
+            // T::Currency::set_lock(SWORK_ID, &who, locks, WithdrawReasons::all());
+            // let now = <frame_system::Module<T>>::block_number();
+            // <LockBlock<T>>::insert(&who, now);
             // 8. Join the group
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.insert(who.clone());
@@ -830,10 +835,10 @@ decl_module! {
             });
 
             // 5. Quit the group
-            let since = <LockBlock<T>>::get(&who);
-            let now = <frame_system::Module<T>>::block_number();
-            ensure!(now - since.unwrap() > T::LockPeriod::get(), Error::<T>::NotAllowedQuit);
-            T::Currency::remove_lock(SWORK_ID,&who);
+            //let since = <LockBlock<T>>::get(&who);
+            //let now = <frame_system::Module<T>>::block_number();
+            //ensure!(now - since.unwrap() > T::LockPeriod::get(), Error::<T>::NotAllowedQuit);
+            //T::Currency::remove_lock(SWORK_ID,&who);
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.remove(&who);
             });
@@ -871,6 +876,41 @@ decl_module! {
 
             // 5. Quit the group
             T::Currency::remove_lock(SWORK_ID,&member);
+            <Groups<T>>::mutate(&owner, |group| {
+                group.members.remove(&member);
+            });
+
+            // 6. Emit event
+            Self::deposit_event(RawEvent::KickOutSuccess(member));
+
+            Ok(())
+        }
+
+        #[weight = T::WeightInfo::kick_out()]
+        pub fn force_kick_out(
+            origin,
+            owner: <T::Lookup as StaticLookup>::Source,
+            target: <T::Lookup as StaticLookup>::Source
+        ) -> DispatchResult {
+            ensure_root(origin)?;
+            let owner = T::Lookup::lookup(owner)?;
+            let member = T::Lookup::lookup(target)?;
+
+            // 1. Ensure who is a group owner right now
+            ensure!(<Groups<T>>::contains_key(&owner), Error::<T>::NotOwner);
+
+            // 2. Ensure who has identity information
+            ensure!(Self::identities(&member).is_some(), Error::<T>::IdentityNotExist);
+            let identity = Self::identities(&member).unwrap();
+
+            // 4. Remove the group owner
+            <Identities<T>>::mutate(&member, |maybe_i| match *maybe_i {
+                Some(Identity { ref mut group, .. }) => *group = None,
+                None => {},
+            });
+
+            // 5. Quit the group
+            //T::Currency::remove_lock(SWORK_ID,&member);
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.remove(&member);
             });

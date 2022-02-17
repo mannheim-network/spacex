@@ -23,7 +23,11 @@ pub mod time {
     use crate::{BlockNumber, Moment};
 
     // Alpha & mainnet
+    #[cfg(feature = "test")]
+    pub const MILLISECS_PER_BLOCK: Moment = 6000;
+    #[cfg(not(feature = "test"))]
     pub const MILLISECS_PER_BLOCK: Moment = 3000;
+
     // Testnet
     //	pub const MILLISECS_PER_BLOCK: Moment = 1000;
     pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;

@@ -15,6 +15,10 @@ use sp_runtime::{
     traits::{BlakeTwo256, IdentityLookup},
     Perbill,
 };
+use primitives::{
+    constants::{time::*, currency::*},
+    *
+};
 pub use market::{Replica, FileInfo};
 use primitives::{traits::BenefitInterface, EraIndex, MerkleRoot};
 use balances::{AccountData, NegativeImbalance};
@@ -209,6 +213,9 @@ impl<AID> BenefitInterface<AID, BalanceOf<Test>, NegativeImbalanceOf<Test>> for 
 parameter_types! {
     pub const PunishmentSlots: u32 = 4;
     pub const MaxGroupSize: u32 = 4;
+    pub const Slash: Balance = 100 * DOLLARS as u64;
+    pub const Locks: Balance = 1000 * DOLLARS as u64;
+    pub const LockPeriod: BlockNumber = 30 * MINUTES;
 }
 
 impl Config for Test {
@@ -218,6 +225,9 @@ impl Config for Test {
     type Works = TestWorksInterface;
     type MarketInterface = Market;
     type MaxGroupSize = MaxGroupSize;
+    type Slash = Slash;
+    type Locks = Locks;
+    type LockPeriod = LockPeriod;
     type BenefitInterface = TestBenefitInterface;
     type WeightInfo = weight::WeightInfo<Test>;
 }
