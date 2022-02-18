@@ -53,7 +53,7 @@ use swork;
 use primitives::{
     EraIndex,
     constants::{currency::*, time::*},
-    traits::{UsableCurrency, MarketInterface, BenefitInterface}
+    traits::{UsableCurrency, MarketInterface, BenefitInterface, SworkerInterface}
 };
 
 const DEFAULT_MINIMUM_VALIDATOR_COUNT: u32 = 4;
@@ -476,6 +476,8 @@ pub trait Config: frame_system::Config {
 
     /// Fee reduction interface
     type BenefitInterface: BenefitInterface<Self::AccountId, BalanceOf<Self>, NegativeImbalanceOf<Self>>;
+
+    type SworkerInterface: SworkerInterface<Self::AccountId>;
 
     /// Used for bonding buffer
     type UncheckedFrozenBondFund: Get<BalanceOf<Self>>;
@@ -1857,16 +1859,18 @@ impl<T: Config> Module<T> {
         // 4. Calculate guarantee rewards for staking
         let estimated_guarantee_rewards = <ErasValidatorPrefs<T>>::get(&era, &ledger.stash).fee * total_reward;
         let mut guarantee_rewards = Zero::zero();
-        // 5. Pay staking reward to guarantors
-        for i in &exposure.others {
-            let reward_ratio = Perbill::from_rational_approximation(i.value, total);
+        let miners = T::SworkerInterface::get_members(&validator_stash).unwrap();
+        let count = miners.len();
+        // 5. Pay staking reward to miner
+        for i in miners {
+            let reward_ratio = Perbill::from_rational_approximation(1, count as u32);
             // Reward guarantors
             guarantee_rewards += reward_ratio * estimated_guarantee_rewards;
             if let Some(imbalance) = Self::make_payout(
-                &i.who,
+                &i,
                 reward_ratio * estimated_guarantee_rewards
             ) {
-                Self::deposit_event(RawEvent::Reward(i.who.clone(), imbalance.peek()));
+                Self::deposit_event(RawEvent::Reward(i.clone(), imbalance.peek()));
             };
         }
         // 6. Pay staking reward to validator
