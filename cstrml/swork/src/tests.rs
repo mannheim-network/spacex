@@ -10,6 +10,7 @@ use frame_support::{
 };
 use hex;
 use keyring::Sr25519Keyring;
+use primitives::constants::currency::DOLLARS;
 
 /// Register test cases
 #[test]
@@ -2577,9 +2578,10 @@ fn quit_group_should_work_for_stake_limit() {
     ExtBuilder::default()
         .build()
         .execute_with(|| {
-            let alice = Sr25519Keyring::Alice.to_account_id();
-            let ferdie = Sr25519Keyring::Ferdie.to_account_id();
 
+            let alice = Sr25519Keyring::Alice.to_account_id();
+            let _ = Balances::make_free_balance_be(&alice, 200_000 * DOLLARS as u64);
+            let ferdie = Sr25519Keyring::Ferdie.to_account_id();
             assert_noop!(
                 Swork::quit_group(
                     Origin::signed(alice.clone())
@@ -2642,7 +2644,6 @@ fn quit_group_should_work_for_stake_limit() {
             ));
 
             run_to_block(603);
-
             assert_ok!(Swork::quit_group(
                 Origin::signed(alice.clone())
             ));

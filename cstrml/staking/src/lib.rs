@@ -53,7 +53,7 @@ use swork;
 use primitives::{
     EraIndex,
     constants::{currency::*, time::*},
-    traits::{UsableCurrency, MarketInterface, BenefitInterface}
+    traits::{UsableCurrency, MarketInterface, BenefitInterface, CollectiveInterface}
 };
 
 const DEFAULT_MINIMUM_VALIDATOR_COUNT: u32 = 4;
@@ -477,6 +477,8 @@ pub trait Config: frame_system::Config {
     /// Fee reduction interface
     type BenefitInterface: BenefitInterface<Self::AccountId, BalanceOf<Self>, NegativeImbalanceOf<Self>>;
 
+    type CollectiveInterface: CollectiveInterface<Self::AccountId>;
+
     /// Used for bonding buffer
     type UncheckedFrozenBondFund: Get<BalanceOf<Self>>;
 
@@ -577,6 +579,8 @@ decl_storage! {
         pub ErasStakingPayout get(fn eras_staking_payout):
             map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
 
+        pub ErasCouncilPayout get(fn eras_council_payout):
+            map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
         /// Market staking payout of validator at era.
         pub ErasMarketPayout get(fn eras_market_payout):
             map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
@@ -729,7 +733,7 @@ decl_event!(
         /// not be processed.
         OldSlashingReportDiscarded(SessionIndex),
         /// Total reward at each era
-        EraReward(EraIndex, Balance, Balance),
+        EraReward(EraIndex, Balance, Balance, Balance),
         /// Staking pot is not enough
         NotEnoughCurrency(EraIndex, Balance, Balance),
         /// An account has bonded this amount. [stash, amount]
@@ -2032,12 +2036,13 @@ impl<T: Config> Module<T> {
                 let mut total_payout = market_total_payout.saturating_add(gpos_total_payout);
 
                 // 2. decrease the last fee reduction and update the next total fee reduction
-                let used_fee = T::BenefitInterface::update_era_benefit(active_era_index + 1, total_payout);
-                total_payout = total_payout.saturating_sub(used_fee);
+                //let used_fee = T::BenefitInterface::update_era_benefit(active_era_index + 1, total_payout);
+                //total_payout = total_payout.saturating_sub(used_fee);
 
                 // 3. Split the payout for staking and authoring
                 let total_authoring_payout = Perbill::from_percent(18) * total_payout;
-                let total_staking_payout = total_payout.saturating_sub(total_authoring_payout);
+                let total_council_payout = Perbill::from_percent(4) * total_payout;
+                let total_staking_payout = total_payout.saturating_sub(total_authoring_payout).saturating_sub(total_council_payout);
 
                 // 4. Block authoring payout
                 for (v, p) in points.individual.iter() {
@@ -2050,9 +2055,12 @@ impl<T: Config> Module<T> {
 
                 // 5. Staking payout
                 <ErasStakingPayout<T>>::insert(active_era_index, total_staking_payout);
-    
-                // 6. Deposit era reward event
-                Self::deposit_event(RawEvent::EraReward(active_era_index, total_authoring_payout, total_staking_payout));
+
+                // 6. collective payout
+                <ErasCouncilPayout<T>>::insert(active_era_index, total_council_payout);
+
+                // 7. Deposit era reward event
+                Self::deposit_event(RawEvent::EraReward(active_era_index, total_authoring_payout, total_council_payout, total_staking_payout));
     
                 // TODO: enable treasury and might bring this back
                 // T::Reward::on_unbalanced(total_imbalance);
@@ -2082,7 +2090,7 @@ impl<T: Config> Module<T> {
 
         // Milliseconds per quarter
         const MILLISECONDS_PER_QUARTER: u64 = 1000 * 3600 * 24 * 90;
-        //  (90d * 24h * 3600s * 1000ms) / (millisecs_in_era = block_time * blocks_num_in_era)
+
         let quarter_in_eras = MILLISECONDS_PER_QUARTER / MILLISECS_PER_BLOCK / (EPOCH_DURATION_IN_BLOCKS * T::SessionsPerEra::get()) as u64;
 
         let reward_this_era = maybe_rewards_this_quarter / quarter_in_eras as u128;

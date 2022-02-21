@@ -214,7 +214,7 @@ parameter_types! {
     pub const PunishmentSlots: u32 = 4;
     pub const MaxGroupSize: u32 = 4;
     pub const Slash: Balance = 100 * DOLLARS as u64;
-    pub const Locks: Balance = 1000 * DOLLARS as u64;
+    pub const Locks: Balance = 900 * DOLLARS as u64;
     pub const LockPeriod: BlockNumber = 30 * MINUTES;
 }
 

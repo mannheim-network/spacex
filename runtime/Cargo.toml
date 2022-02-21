@@ -41,7 +41,6 @@ pallet-authorship = { default-features = false, git = "https://github.com/mannhe
 pallet-authority-discovery = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 pallet-babe = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 pallet-bounties = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
-pallet-collective = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 pallet-democracy = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 pallet-elections-phragmen = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
 frame-executive = { default-features = false, git = "https://github.com/mannheim-network/substrate" }
@@ -80,6 +79,7 @@ primitives = { package = "cst-primitives", path = "../primitives", default-featu
 storage = { package = "cstrml-swork", path = "../cstrml/swork", default-features = false, version = "1.0.0" }
 staking = { package = "cstrml-staking", path = "../cstrml/staking", default-features = false, version = "1.0.0" }
 benefits = { package = "cstrml-benefits", path = "../cstrml/benefits", default-features = false, version = "1.0.0" }
+pallet-collective = { package = "pallet-collective", path = "../cstrml/collective", default-features = false }
 
 # spacex benchmark dependencies
 swork-benchmarking = { package = "cstrml-swork-benchmarking", path = "../cstrml/swork/benchmarking", default-features = false, optional = true, version = "1.0.0" }
