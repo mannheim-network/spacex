@@ -784,14 +784,14 @@ decl_module! {
             ensure!(Self::work_reports(identity.anchor).unwrap_or_default().spower == 0, Error::<T>::IllegalSpower);
 
             //7.lock token
-            // let slash = T::Slash::get();
-            // let locks = T::Locks::get();
-            // let free_balance = T::Currency::free_balance(&who);
-            // ensure!(slash + locks < free_balance, Error::<T>::InsufficientCurrency);
-            // slashing::do_slash::<T>(&who, slash);
-            // T::Currency::set_lock(SWORK_ID, &who, locks, WithdrawReasons::all());
-            // let now = <frame_system::Module<T>>::block_number();
-            // <LockBlock<T>>::insert(&who, now);
+            let slash = T::Slash::get();
+            let locks = T::Locks::get();
+            let free_balance = T::Currency::free_balance(&who);
+            ensure!(slash + locks < free_balance, Error::<T>::InsufficientCurrency);
+            slashing::do_slash::<T>(&who, slash);
+            T::Currency::set_lock(SWORK_ID, &who, locks, WithdrawReasons::all());
+            let now = <frame_system::Module<T>>::block_number();
+            <LockBlock<T>>::insert(&who, now);
             // 8. Join the group
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.insert(who.clone());
@@ -828,17 +828,19 @@ decl_module! {
             // 3. Ensure owner's group exist
             ensure!(<Groups<T>>::contains_key(&owner), Error::<T>::NotJoint);
 
-            // 4. Remove the group owner
+            // 4. Ensure can remove lock
+            let since = <LockBlock<T>>::get(&who);
+            let now = <frame_system::Module<T>>::block_number();
+            ensure!(now - since.unwrap() > T::LockPeriod::get(), Error::<T>::NotAllowedQuit);
+            T::Currency::remove_lock(SWORK_ID,&who);
+
+            // 5. Remove the group owner
             <Identities<T>>::mutate(&who, |maybe_i| match *maybe_i {
                 Some(Identity { ref mut group, .. }) => *group = None,
                 None => {},
             });
 
-            // 5. Quit the group
-            //let since = <LockBlock<T>>::get(&who);
-            //let now = <frame_system::Module<T>>::block_number();
-            //ensure!(now - since.unwrap() > T::LockPeriod::get(), Error::<T>::NotAllowedQuit);
-            //T::Currency::remove_lock(SWORK_ID,&who);
+            // 6. Quit the group
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.remove(&who);
             });
@@ -910,7 +912,7 @@ decl_module! {
             });
 
             // 5. Quit the group
-            //T::Currency::remove_lock(SWORK_ID,&member);
+            T::Currency::remove_lock(SWORK_ID,&member);
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.remove(&member);
             });

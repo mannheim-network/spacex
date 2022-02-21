@@ -103,7 +103,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("spacex"),
     impl_name: create_runtime_str!("mannheim-spacex"),
     authoring_version: 1,
-    spec_version: 4,
+    spec_version: 1,
     impl_version: 1,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1
@@ -390,7 +390,7 @@ impl pallet_session::historical::Config for Runtime {
 parameter_types! {
     pub const StakingModuleId: ModuleId = ModuleId(*b"cstaking");
     // 6 sessions in an era (6 hours).
-    pub const SessionsPerEra: SessionIndex = 6;
+    pub const SessionsPerEra: SessionIndex = 8;
     // 112 eras for unbonding (28 days).
     pub const BondingDuration: EraIndex = 28 * 4;
     // 108 eras in which slashes can be cancelled (slightly less than 28 days).
@@ -428,7 +428,6 @@ impl staking::Config for Runtime {
     type MarketStakingPot = Market;
     type MarketStakingPotDuration = MarketStakingPotDuration;
     type BenefitInterface = Benefits;
-    type SworkerInterface = Storage;
     type UncheckedFrozenBondFund = UncheckedFrozenBondFund;
     type WeightInfo = staking::weight::WeightInfo;
 }
