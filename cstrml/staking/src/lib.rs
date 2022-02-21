@@ -516,7 +516,7 @@ decl_storage! {
         HistoryDepth get(fn history_depth) config(): u32 = 84;
 
         /// Start era for reward curve
-        StartRewardEra get(fn start_reward_era) config(): EraIndex = 8;
+        StartRewardEra get(fn start_reward_era) config(): EraIndex = 0;
 
         /// Map from all locked "stash" accounts to the controller account.
         pub Bonded get(fn bonded): map hasher(twox_64_concat) T::AccountId => Option<T::AccountId>;
@@ -1827,11 +1827,12 @@ impl<T: Config> Module<T> {
         ensure!(era <= current_era, Error::<T>::InvalidEraToReward);
         let history_depth = Self::history_depth();
         ensure!(era >= current_era.saturating_sub(history_depth), Error::<T>::InvalidEraToReward);
-
         // Note: if era has no reward to be claimed, era may be future. better not to update
         // `ledger.claimed_rewards` in this case.
         let total_era_staking_payout = <ErasStakingPayout<T>>::get(&era)
             .ok_or_else(|| Error::<T>::InvalidEraToReward)?;
+
+        let council_reward = <ErasCouncilPayout<T>>::get(&era).ok_or_else(|| Error::<T>::InvalidEraToReward)?;
 
         let controller = Self::bonded(&validator_stash).ok_or(Error::<T>::NotStash)?;
         let mut ledger = <Ledger<T>>::get(&controller).ok_or_else(|| Error::<T>::NotController)?;
@@ -1842,7 +1843,7 @@ impl<T: Config> Module<T> {
             Err(pos) => ledger.claimed_rewards.insert(pos, era),
         }
         /* Input data seems good, no errors allowed after this point */
-        let exposure = <ErasStakersClipped<T>>::get(&era, &ledger.stash);
+        //let exposure = <ErasStakersClipped<T>>::get(&era, &ledger.stash);
         <Ledger<T>>::insert(&controller, &ledger);
 
         // 2. Pay authoring reward
@@ -1852,33 +1853,44 @@ impl<T: Config> Module<T> {
             total_reward = total_reward.saturating_add(authoring_reward);
         }
 
-        let to_num =
-        |b: BalanceOf<T>| <T::CurrencyToVote as Convert<BalanceOf<T>, u128>>::convert(b);
-
-        // 3. Retrieve total stakes and total staking reward
-        let era_total_stakes = <ErasTotalStakes<T>>::get(&era);
-        let staking_reward = Perbill::from_rational_approximation(to_num(exposure.total), to_num(era_total_stakes)) * total_era_staking_payout;
-        total_reward = total_reward.saturating_add(staking_reward);
-        let total = exposure.total.max(One::one());
-        // 4. Calculate guarantee rewards for staking
-        let estimated_guarantee_rewards = <ErasValidatorPrefs<T>>::get(&era, &ledger.stash).fee * total_reward;
-        let mut guarantee_rewards = Zero::zero();
+        // let to_num =
+        // |b: BalanceOf<T>| <T::CurrencyToVote as Convert<BalanceOf<T>, u128>>::convert(b);
+        //
+        // // 3. Retrieve total stakes and total staking reward
+        // let era_total_stakes = <ErasTotalStakes<T>>::get(&era);
+        // let staking_reward = Perbill::from_rational_approximation(to_num(exposure.total), to_num(era_total_stakes)) * total_era_staking_payout;
+        // total_reward = total_reward.saturating_add(staking_reward);
+        // let total = exposure.total.max(One::one());
+        // 4. Calculate miner rewards for staking
         let miners = T::SworkerInterface::get_members(&validator_stash).unwrap();
         let count = miners.len();
-        // 5. Pay staking reward to miner
-        for i in miners {
-            let reward_ratio = Perbill::from_rational_approximation(1, count as u32);
-            // Reward guarantors
-            guarantee_rewards += reward_ratio * estimated_guarantee_rewards;
-            if let Some(imbalance) = Self::make_payout(
-                &i,
-                reward_ratio * estimated_guarantee_rewards
-            ) {
+        let total_workload = T::SworkerInterface::get_owner_workload(&validator_stash);
+        // 5. Pay reward to miner
+        if count == 0 {
+            total_reward += total_era_staking_payout;
+        }else {
+            for i in miners {
+                let workload = T::SworkerInterface::get_workload(&i);
+                let reward_ratio = Permill::from_rational_approximation(workload, total_workload);
+                // Reward miner
+                if let Some(imbalance) = T::Currency::deposit_into_existing(&i, reward_ratio * total_era_staking_payout).ok(){
+                    Self::deposit_event(RawEvent::Reward(i.clone(), imbalance.peek()));
+                };
+            }
+        }
+
+        // Pay reward to council
+        let council_members = T::CollectiveInterface::members();
+        let council_count = council_members.len();
+        for i in council_members {
+            RawEvent::Reward(i.clone(), 0);
+            //let reward_ratio = Perbill::from_rational_approximation(1, council_count as u32);
+            if let Some(imbalance) = T::Currency::deposit_into_existing(&i,  council_reward).ok(){
                 Self::deposit_event(RawEvent::Reward(i.clone(), imbalance.peek()));
             };
         }
-        // 6. Pay staking reward to validator
-        validator_imbalance.maybe_subsume(Self::make_payout(&ledger.stash, total_reward - guarantee_rewards));
+        // 6. Pay reward to validator
+        validator_imbalance.maybe_subsume(Self::make_payout(&ledger.stash, total_reward));
         Self::deposit_event(RawEvent::Reward(ledger.stash, validator_imbalance.peek()));
         Ok(())
     }

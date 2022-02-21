@@ -36,7 +36,7 @@ pub mod time {
     #[cfg(feature = "test")]
     pub const EPOCH_DURATION_IN_BLOCKS: BlockNumber = 10 * MINUTES;
     #[cfg(not(feature = "test"))]
-    pub const EPOCH_DURATION_IN_BLOCKS: BlockNumber = 1 * HOURS;
+    pub const EPOCH_DURATION_IN_BLOCKS: BlockNumber = 1 * MINUTES;
 
     // These time units are defined in number of blocks.
     pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);

@@ -282,6 +282,24 @@ impl swork::Config for Test {
 }
 
 parameter_types! {
+    pub const CouncilMotionDuration: BlockNumber = 3 * DAYS as u64;
+	pub const CouncilMaxProposals: u32 = 100;
+	pub const CouncilMaxMembers: u32 = 100;
+}
+
+type CouncilCollective = pallet_collective::Instance1;
+impl pallet_collective::Config<CouncilCollective> for Test {
+    type Origin = Origin;
+    type Proposal = Call;
+    type Event = ();
+    type MotionDuration = CouncilMotionDuration;
+    type MaxProposals = CouncilMaxProposals;
+    type MaxMembers = CouncilMaxMembers;
+    type DefaultVote = pallet_collective::PrimeDefaultVote;
+    type WeightInfo = ();
+}
+
+parameter_types! {
     pub const StakingModuleId: ModuleId = ModuleId(*b"cstaking");
     pub const SessionsPerEra: SessionIndex = 3;
     pub const BondingDuration: EraIndex = 3;
@@ -311,6 +329,8 @@ impl Config for Test {
     type MarketStakingPot = TestStaking;
     type MarketStakingPotDuration = MarketStakingPotDuration;
     type BenefitInterface = TestBenefitInterface;
+    type SworkerInterface = Swork;
+    type CollectiveInterface = Council;
     type UncheckedFrozenBondFund = UncheckedFrozenBondFund;
     type WeightInfo = weight::WeightInfo;
 }
@@ -330,6 +350,7 @@ frame_support::construct_runtime!(
 		Staking: staking::{Module, Call, Config<T>, Storage, Event<T>},
 		Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
 		Swork: swork::{Module, Call, Storage, Event<T>, Config<T>},
+        Council: pallet_collective::<Instance1>::{Module, Call, Storage, Origin<T>, Event<T>, Config<T>},
 	}
 );
 
@@ -775,7 +796,6 @@ pub fn authoring_rewards_in_era(era_index: EraIndex) -> BalanceOf<Test> {
 
 pub fn staking_rewards_in_era(era_index: EraIndex) -> BalanceOf<Test> {
     let total_reward = Staking::total_rewards_in_era(era_index);
-    println!("{}", total_reward);
     let authoring_reward = authoring_rewards_in_era(era_index);
     total_reward.saturating_sub(authoring_reward)
 }

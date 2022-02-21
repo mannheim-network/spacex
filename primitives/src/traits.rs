@@ -3,7 +3,7 @@
 
 use frame_support::traits::{LockableCurrency, WithdrawReasons};
 use crate::{SworkerAnchor, MerkleRoot, BlockNumber, EraIndex};
-use sp_std::collections::btree_set::BTreeSet;
+use sp_std::collections::{btree_set::BTreeSet,btree_map::BTreeMap};
 use sp_std::vec::Vec;
 use sp_runtime::{DispatchError, Perbill};
 
@@ -30,6 +30,10 @@ pub trait SworkerInterface<AccountId> {
 	fn get_owner(who: &AccountId) -> Option<AccountId>;
 	// Get members of this owner
 	fn get_members(who: &AccountId) -> Option<BTreeSet<AccountId>>;
+
+	fn get_workload(who: &AccountId) -> u128;
+
+	fn get_owner_workload(who: &AccountId) -> u128;
 }
 
 /// Means for interacting with a specialized version of the `market` trait.

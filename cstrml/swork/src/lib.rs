@@ -175,6 +175,14 @@ impl<T: Config> SworkerInterface<T::AccountId> for Module<T> {
     fn get_members(who: &T::AccountId) -> Option<BTreeSet<T::AccountId>> {
         Some(Self::groups(who).allowlist)
     }
+
+    fn get_workload(who: &T::AccountId) -> u128 {
+        Self::miner_workload(who).unwrap_or_default()
+    }
+
+    fn get_owner_workload(who: &T::AccountId) -> u128 {
+        Self::owner_workload(who).unwrap_or_default()
+    }
 }
 
 /// The module's configuration trait.
@@ -232,6 +240,14 @@ decl_storage! {
 
         /// The workload information
         pub Workload get(fn workload): Option<(BTreeMap<T::AccountId, u128>, u128, u128, u128)>;
+
+        ///miner workload information
+        pub MinerWorkload get(fn miner_workload):
+            map hasher(twox_64_concat) T::AccountId => Option<u128>;
+
+        ///owner workload information
+        pub OwnerWorkload get(fn owner_workload):
+            map hasher(twox_64_concat) T::AccountId => Option<u128>;
 
         /// The pub key information, mapping from sWorker public key to an pubkey information, including the sworker enclave code and option anchor.
         pub PubKeys get(fn pub_keys):
@@ -974,11 +990,13 @@ impl<T: Config> Module<T> {
                     total_spower = total_spower.saturating_add(spower);
                     total_free = total_free.saturating_add(free);
                     total_reported_files_size = total_reported_files_size.saturating_add(reported_files_size);
+                    <MinerWorkload<T>>::insert(&reporter, spower.saturating_add(free));
                     let mut owner = reporter;
                     if let Some(group) = id.group {
                         owner = group;
                     }
                     let workload = workload_map.get(&owner).unwrap_or(&0u128).saturating_add(spower).saturating_add(free);
+                    <OwnerWorkload<T>>::insert(&owner, workload);
                     workload_map.insert(owner, workload);
                     if let Some(to_removed_slot) = maybe_to_removed_slot {
                         ReportedInSlot::remove(&id.anchor, to_removed_slot);

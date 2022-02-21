@@ -30,6 +30,7 @@ rand_chacha = { default-features = false, version = "0.2" }
 
 # spacex runtime modules
 swork = { package = "cstrml-swork", path = "../swork", default-features = false }
+pallet-collective = { package = "pallet-collective", path = "../collective", default-features = false }
 primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
 
 [dev-dependencies]
@@ -59,7 +60,8 @@ std = [
 	"pallet-session/std",
 	"frame-system/std",
 	"pallet-authorship/std",
-	"swork/std"
+	"swork/std",
+	"pallet-collective/std"
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

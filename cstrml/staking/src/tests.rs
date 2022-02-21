@@ -270,7 +270,6 @@ fn rewards_should_work() {
             let init_balance_10 = Balances::total_balance(&10);
             let init_balance_11 = Balances::total_balance(&11);
             let init_balance_20 = Balances::total_balance(&20);
-
             // Set payee to controller
             assert_ok!(set_payee(
                 10,
@@ -285,7 +284,6 @@ fn rewards_should_work() {
             // Initial config should be correct
             assert_eq!(Staking::current_era().unwrap_or(0), 0);
             assert_eq!(Session::current_index(), 0);
-
             // Add a dummy guarantor.
             //
             // Equal division indicates that the reward will be equally divided among validator and
@@ -308,7 +306,6 @@ fn rewards_should_work() {
                     others: vec![IndividualExposure { who: 2, value: 500 }],
                 },
             );
-
             <Payee<Test>>::insert(&2, RewardDestination::Stash);
             assert_eq!(Staking::payee(2), RewardDestination::Stash);
             assert_eq!(Staking::payee(11), RewardDestination::Controller);
@@ -327,7 +324,7 @@ fn rewards_should_work() {
 
             // Compute total payout now for whole duration as other parameter won't change
             let staking_reward = staking_rewards_in_era(Staking::current_era().unwrap_or(0));
-            println!("{}", staking_reward);
+            println!("staking_reward---{}", staking_reward);
             let authoring_reward = authoring_rewards_in_era(Staking::current_era().unwrap_or(0));
             assert_eq!(Staking::eras_total_stakes(0), 2001);
             assert_eq!(Balances::total_balance(&2), init_balance_2);
