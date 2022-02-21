@@ -1871,7 +1871,7 @@ impl<T: Config> Module<T> {
         }else {
             for i in miners {
                 let workload = T::SworkerInterface::get_workload(&i);
-                let reward_ratio = Permill::from_rational_approximation(workload, total_workload);
+                let reward_ratio = Perbill::from_rational_approximation(workload, total_workload);
                 // Reward miner
                 if let Some(imbalance) = T::Currency::deposit_into_existing(&i, reward_ratio * total_era_staking_payout).ok(){
                     Self::deposit_event(RawEvent::Reward(i.clone(), imbalance.peek()));
@@ -1883,9 +1883,8 @@ impl<T: Config> Module<T> {
         let council_members = T::CollectiveInterface::members();
         let council_count = council_members.len();
         for i in council_members {
-            RawEvent::Reward(i.clone(), 0);
-            //let reward_ratio = Perbill::from_rational_approximation(1, council_count as u32);
-            if let Some(imbalance) = T::Currency::deposit_into_existing(&i,  council_reward).ok(){
+            let reward_ratio = Permill::from_rational_approximation(1, council_count as u32);
+            if let Some(imbalance) = T::Currency::deposit_into_existing(&i, reward_ratio * council_reward).ok(){
                 Self::deposit_event(RawEvent::Reward(i.clone(), imbalance.peek()));
             };
         }

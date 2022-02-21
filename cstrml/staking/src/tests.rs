@@ -321,7 +321,6 @@ fn rewards_should_work() {
             <Module<Test>>::reward_by_ids(vec![(11, 50)]);
             // This is the second validator of the current elected set.
             <Module<Test>>::reward_by_ids(vec![(21, 50)]);
-
             // Compute total payout now for whole duration as other parameter won't change
             let staking_reward = staking_rewards_in_era(Staking::current_era().unwrap_or(0));
             println!("staking_reward---{}", staking_reward);
@@ -330,7 +329,6 @@ fn rewards_should_work() {
             assert_eq!(Balances::total_balance(&2), init_balance_2);
             assert_eq!(Balances::total_balance(&10), init_balance_10);
             assert_eq!(Balances::total_balance(&11), init_balance_11);
-
             block = 6; // Block 6 => Session 2 => Era 0
             Staking::on_finalize(System::block_number());
             System::set_block_number(block);
