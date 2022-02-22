@@ -156,7 +156,7 @@ mod benchmarking;
 pub mod weights;
 
 use sp_std::prelude::*;
-use sp_std::{cmp, result, fmt::Debug, ops::BitOr};
+use sp_std::{cmp, result, mem, fmt::Debug, ops::BitOr};
 use codec::{Codec, Encode, Decode};
 use frame_support::{
 	ensure,
@@ -228,6 +228,63 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config<I>, I: 'static> Pallet<T, I> {
+		/// Set the balances of a given account.
+		///
+		/// This will alter `FreeBalance` and `ReservedBalance` in storage. it will
+		/// also decrease the total issuance of the system (`TotalIssuance`).
+		/// If the new free or reserved balance is below the existential deposit,
+		/// it will reset the account nonce (`frame_system::AccountNonce`).
+		///
+		/// The dispatch origin for this call is `root`.
+		///
+		/// # <weight>
+		/// - Independent of the arguments.
+		/// - Contains a limited number of reads and writes.
+		/// ---------------------
+		/// - Base Weight:
+		///     - Creating: 27.56 µs
+		///     - Killing: 35.11 µs
+		/// - DB Weight: 1 Read, 1 Write to `who`
+		/// # </weight>
+		#[pallet::weight(
+		T::WeightInfo::set_balance_creating() // Creates a new account.
+		.max(T::WeightInfo::set_balance_killing()) // Kills an existing account.
+		)]
+		pub(super) fn set_balance(
+			origin: OriginFor<T>,
+			who: <T::Lookup as StaticLookup>::Source,
+			#[pallet::compact] new_free: T::Balance,
+			#[pallet::compact] new_reserved: T::Balance,
+		) -> DispatchResultWithPostInfo {
+			ensure_root(origin)?;
+			let who = T::Lookup::lookup(who)?;
+			let existential_deposit = T::ExistentialDeposit::get();
+
+			let wipeout = new_free + new_reserved < existential_deposit;
+			let new_free = if wipeout { Zero::zero() } else { new_free };
+			let new_reserved = if wipeout { Zero::zero() } else { new_reserved };
+
+			let (free, reserved) = Self::mutate_account(&who, |account| {
+				if new_free > account.free {
+					mem::drop(PositiveImbalance::<T, I>::new(new_free - account.free));
+				} else if new_free < account.free {
+					mem::drop(NegativeImbalance::<T, I>::new(account.free - new_free));
+				}
+
+				if new_reserved > account.reserved {
+					mem::drop(PositiveImbalance::<T, I>::new(new_reserved - account.reserved));
+				} else if new_reserved < account.reserved {
+					mem::drop(NegativeImbalance::<T, I>::new(account.reserved - new_reserved));
+				}
+
+				account.free = new_free;
+				account.reserved = new_reserved;
+
+				(account.free, account.reserved)
+			})?;
+			Self::deposit_event(Event::BalanceSet(who, free, reserved));
+			Ok(().into())
+		}
 		/// Transfer some liquid free balance to another account.
 		///
 		/// `transfer` will set the `FreeBalance` of the sender and receiver.
