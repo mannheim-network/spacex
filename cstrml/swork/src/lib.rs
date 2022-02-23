@@ -173,7 +173,7 @@ impl<T: Config> SworkerInterface<T::AccountId> for Module<T> {
 
     /// Get members of this owner
     fn get_members(who: &T::AccountId) -> Option<BTreeSet<T::AccountId>> {
-        Some(Self::groups(who).allowlist)
+        Some(Self::groups(who).members)
     }
 
     fn get_workload(who: &T::AccountId) -> u128 {
@@ -553,7 +553,7 @@ decl_module! {
 
             // 3. Ensure who cannot be group owner
             ensure!(!<Groups<T>>::contains_key(&reporter), Error::<T>::GroupOwnerForbidden);
-            
+
             // 4. Ensure reporter's code is legal
             ensure!(Self::reporter_code_check(&curr_pk, slot), Error::<T>::OutdatedReporter);
 
