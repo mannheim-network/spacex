@@ -450,7 +450,7 @@ decl_module! {
         /// clear the expired code
         #[weight = T::WeightInfo::set_code()]
         pub fn clear_expired_code(origin, expired_code: SworkerCode) {
-            let _ = ensure_signed(origin)?;
+            let _ = ensure_root(origin)?;
             if let Some(expire_block) = Self::codes(&expired_code) {
                 let curr_bn = <system::Module<T>>::block_number();
                 ensure!(expire_block < curr_bn, Error::<T>::CodeNotExpired);

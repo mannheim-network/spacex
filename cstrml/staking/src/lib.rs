@@ -566,7 +566,7 @@ decl_storage! {
         pub ErasStakersClipped get(fn eras_stakers_clipped):
         double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
         => Exposure<T::AccountId, BalanceOf<T>>;
-            
+
         /// Similar to `ErasStakers`, this holds the preferences of validators.
         ///
         /// This is keyed first by the era index to allow bulk deletion and then the stash account.
@@ -576,13 +576,16 @@ decl_storage! {
         pub ErasValidatorPrefs get(fn eras_validator_prefs):
             double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
             => ValidatorPrefs;
-        
+
         /// Total staking payout at era.
         pub ErasStakingPayout get(fn eras_staking_payout):
-            map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
+            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
+            => Option<BalanceOf<T>>;
 
         pub ErasCouncilPayout get(fn eras_council_payout):
-            map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
+            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
+            => Option<BalanceOf<T>>;
+
         /// Market staking payout of validator at era.
         pub ErasMarketPayout get(fn eras_market_payout):
             map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
@@ -815,7 +818,7 @@ decl_module! {
         /// Set to 0 if slashes should be applied immediately, without opportunity for
         /// intervention.
         const SlashDeferDuration: EraIndex = T::SlashDeferDuration::get();
-        
+
         /// The maximum number of guarantors rewarded for each validator.
         ///
         /// For each validator only the `$MaxGuarantorRewardedPerValidator` biggest stakers can claim
@@ -1487,7 +1490,7 @@ decl_module! {
         #[weight = 1000]
         fn cancel_era_reward(origin, era_index: EraIndex) {
             ensure_root(origin)?;
-            <ErasStakingPayout<T>>::remove(era_index);
+            <ErasStakingPayout<T>>::remove_prefix(era_index);
         }
 
         #[weight = 1000]
@@ -1829,10 +1832,10 @@ impl<T: Config> Module<T> {
         ensure!(era >= current_era.saturating_sub(history_depth), Error::<T>::InvalidEraToReward);
         // Note: if era has no reward to be claimed, era may be future. better not to update
         // `ledger.claimed_rewards` in this case.
-        let total_era_staking_payout = <ErasStakingPayout<T>>::get(&era)
+        let total_era_staking_payout = <ErasStakingPayout<T>>::get(&era, &validator_stash)
             .ok_or_else(|| Error::<T>::InvalidEraToReward)?;
 
-        let council_reward = <ErasCouncilPayout<T>>::get(&era).ok_or_else(|| Error::<T>::InvalidEraToReward)?;
+        let council_reward = <ErasCouncilPayout<T>>::get(&era, &validator_stash).ok_or_else(|| Error::<T>::InvalidEraToReward)?;
 
         let controller = Self::bonded(&validator_stash).ok_or(Error::<T>::NotStash)?;
         let mut ledger = <Ledger<T>>::get(&controller).ok_or_else(|| Error::<T>::NotController)?;
@@ -1866,7 +1869,7 @@ impl<T: Config> Module<T> {
         let count = miners.len();
         let total_workload = T::SworkerInterface::get_owner_workload(&validator_stash);
         // 5. Pay reward to miner
-        if count == 0 {
+        if count == 0 || total_workload == 0 {
             total_reward += total_era_staking_payout;
         }else {
             for i in miners {
@@ -2059,24 +2062,22 @@ impl<T: Config> Module<T> {
                 let total_council_payout = Perbill::from_percent(4) * total_payout;
                 let total_staking_payout = total_payout.saturating_sub(total_authoring_payout).saturating_sub(total_council_payout);
 
-                // 4. Block authoring payout
+
                 for (v, p) in points.individual.iter() {
                     if *p != 0u32 {
-                        let authoring_reward =
-                            Perbill::from_rational_approximation(*p, points.total) * total_authoring_payout;
-                        <ErasAuthoringPayout<T>>::insert(&active_era_index, v, authoring_reward);
+                        let reward_ratio = Perbill::from_rational_approximation(*p, points.total);
+                        // 4. Block authoring payout
+                        <ErasAuthoringPayout<T>>::insert(&active_era_index, v, reward_ratio * total_authoring_payout);
+                        // 5. Staking payout
+                        <ErasStakingPayout<T>>::insert(active_era_index, v, reward_ratio * total_staking_payout);
+                        // 6. collective payout
+                        <ErasCouncilPayout<T>>::insert(active_era_index, v, reward_ratio * total_council_payout);
                     }
                 }
 
-                // 5. Staking payout
-                <ErasStakingPayout<T>>::insert(active_era_index, total_staking_payout);
-
-                // 6. collective payout
-                <ErasCouncilPayout<T>>::insert(active_era_index, total_council_payout);
-
                 // 7. Deposit era reward event
                 Self::deposit_event(RawEvent::EraReward(active_era_index, total_authoring_payout, total_council_payout, total_staking_payout));
-    
+
                 // TODO: enable treasury and might bring this back
                 // T::Reward::on_unbalanced(total_imbalance);
                 // This is not been used
@@ -2090,7 +2091,8 @@ impl<T: Config> Module<T> {
         <ErasStakers<T>>::remove_prefix(era_index);
         <ErasStakersClipped<T>>::remove_prefix(era_index);
         <ErasValidatorPrefs<T>>::remove_prefix(era_index);
-        <ErasStakingPayout<T>>::remove(era_index);
+        <ErasStakingPayout<T>>::remove_prefix(era_index);
+        <ErasCouncilPayout<T>>::remove_prefix(era_index);
         <ErasMarketPayout<T>>::remove(era_index);
         <ErasTotalStakes<T>>::remove(era_index);
         <ErasAuthoringPayout<T>>::remove_prefix(era_index);
@@ -2195,7 +2197,7 @@ impl<T: Config> Module<T> {
             //         |spans| submitted_in >= spans.last_nonzero_slash(),
             //     )
             // });
-            
+
             for target in targets {
                 if let Some(g) = vg_graph.get_mut(&target.who) {
                      g.push(IndividualExposure {
