@@ -403,6 +403,8 @@ parameter_types! {
     pub const MarketStakingPotDuration: u32 = 60;
     // free transfer amount for other locks
     pub const UncheckedFrozenBondFund: Balance = 1 * DOLLARS;
+    // era interval for reward release
+    pub const RewardReleaseInterval: EraIndex = 3;
 }
 
 impl staking::Config for Runtime {
@@ -432,6 +434,7 @@ impl staking::Config for Runtime {
     type CollectiveInterface = Council;
     type UncheckedFrozenBondFund = UncheckedFrozenBondFund;
     type WeightInfo = staking::weight::WeightInfo;
+    type RewardReleaseInterval = RewardReleaseInterval;
 }
 
 parameter_types! {

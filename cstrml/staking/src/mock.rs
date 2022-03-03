@@ -307,6 +307,7 @@ parameter_types! {
     pub const SPowerRatio: u128 = 2_500;
     pub const MarketStakingPotDuration: u32 = 5;
     pub const UncheckedFrozenBondFund: Balance = 10;
+    pub const RewardReleaseInterval: EraIndex = 3;
 }
 
 impl Config for Test {
@@ -333,6 +334,7 @@ impl Config for Test {
     type CollectiveInterface = Council;
     type UncheckedFrozenBondFund = UncheckedFrozenBondFund;
     type WeightInfo = weight::WeightInfo;
+    type RewardReleaseInterval = RewardReleaseInterval;
 }
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
