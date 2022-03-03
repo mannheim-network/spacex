@@ -580,7 +580,7 @@ decl_storage! {
         /// Number of eras to keep in history.
         ///
         /// Information is kept for eras in `[current_era - history_depth; current_era]`.
-        HistoryDepth get(fn history_depth) config(): u32 = 84;
+        HistoryDepth get(fn history_depth) config(): u32 = 96;
 
         /// Start era for reward curve
         StartRewardEra get(fn start_reward_era) config(): EraIndex = 0;
