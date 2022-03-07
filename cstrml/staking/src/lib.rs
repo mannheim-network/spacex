@@ -747,6 +747,10 @@ decl_storage! {
 
         /// Force Selection
         ForceSelection get(fn force_selection): bool = false;
+
+        EraWorkload get(fn era_workload):
+            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
+            => Option<u128>;
     }
     add_extra_genesis {
         config(stakers):
@@ -1970,13 +1974,13 @@ impl<T: Config> Module<T> {
             let miners =
                 T::SworkerInterface::get_members(&validator_stash).unwrap_or(Default::default());
             let count = miners.len();
-            let total_workload = T::SworkerInterface::get_owner_workload(&validator_stash);
+            let total_workload = <EraWorkload<T>>::get(era, &validator_stash).unwrap_or_default();
             // 5. Pay reward to miner
             if count == 0 {
                 total_reward += era_staking_payout_released;
             } else {
                 for i in miners {
-                    let workload = T::SworkerInterface::get_workload(&i);
+                    let workload = <EraWorkload<T>>::get(era, &i).unwrap_or_default();
                     let reward_ratio =
                         Perbill::from_rational_approximation(workload, total_workload);
                     // Reward miner
@@ -2140,6 +2144,16 @@ impl<T: Config> Module<T> {
                 }
             }
         });
+
+        for (v_stash, _) in <Validators<T>>::iter() {
+            let v_workload = T::SworkerInterface::get_workload(&v_stash);
+            <EraWorkload<T>>::insert(active_era, &v_stash, v_workload);
+            let members = T::SworkerInterface::get_members(&v_stash).unwrap_or(Default::default());
+            for miner in members {
+                let m_workload = T::SworkerInterface::get_workload(&miner);
+                <EraWorkload<T>>::insert(active_era, &miner, m_workload);
+            }
+        }
 
         Self::apply_unapplied_slashes(active_era);
     }
