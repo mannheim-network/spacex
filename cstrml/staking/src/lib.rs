@@ -1944,7 +1944,7 @@ impl<T: Config> Module<T> {
             }
         }
         /* Input data seems good, no errors allowed after this point */
-        //let exposure = <ErasStakersClipped<T>>::get(&era, &ledger.stash);
+        let exposure = <ErasStakersClipped<T>>::get(&era, &ledger.stash);
         <Ledger<T>>::insert(&controller, &ledger);
 
         //update ErasStakingPayout
@@ -1953,34 +1953,26 @@ impl<T: Config> Module<T> {
         staking_reward_release.last_claim_era = current_era;
         <ErasStakingPayout<T>>::insert(era, staking_reward_release);
 
-        // 2. Pay authoring reward
+        //  Pay authoring reward
         let mut validator_imbalance = <PositiveImbalanceOf<T>>::zero();
         let mut total_reward: BalanceOf<T> = Zero::zero();
         if let Some(authoring_reward) = <ErasAuthoringPayout<T>>::get(&era, &validator_stash) {
             total_reward = total_reward.saturating_add(authoring_reward);
         }
 
-        // let to_num =
-        // |b: BalanceOf<T>| <T::CurrencyToVote as Convert<BalanceOf<T>, u128>>::convert(b);
-        //
-        // // 3. Retrieve total stakes and total staking reward
-        // let era_total_stakes = <ErasTotalStakes<T>>::get(&era);
-        // let staking_reward = Perbill::from_rational_approximation(to_num(exposure.total), to_num(era_total_stakes)) * total_era_staking_payout;
-        // total_reward = total_reward.saturating_add(staking_reward);
-        // let total = exposure.total.max(One::one());
-        // 4. Calculate miner rewards for staking
+        // Calculate miner rewards for staking
 
         if !era_staking_payout_released.is_zero() {
             let miners =
                 T::SworkerInterface::get_members(&validator_stash).unwrap_or(Default::default());
             let count = miners.len();
-            let total_workload = <EraWorkload<T>>::get(era, &validator_stash).unwrap_or_default();
+            let total_workload = <EraWorkload<T>>::get(&era, &validator_stash).unwrap_or_default();
             // 5. Pay reward to miner
             if count == 0 {
                 total_reward += era_staking_payout_released;
             } else {
                 for i in miners {
-                    let workload = <EraWorkload<T>>::get(era, &i).unwrap_or_default();
+                    let workload = <EraWorkload<T>>::get(&era, &i).unwrap_or_default();
                     let reward_ratio =
                         Perbill::from_rational_approximation(workload, total_workload);
                     // Reward miner
@@ -2012,9 +2004,25 @@ impl<T: Config> Module<T> {
             <ErasCouncilPayout<T>>::remove(era);
         }
 
-        // 6. Pay reward to validator
         if !total_reward.is_zero() {
-            validator_imbalance.maybe_subsume(Self::make_payout(&ledger.stash, total_reward));
+            let total = exposure.total.max(One::one());
+            // Calculate guarantee rewards for staking
+            let estimated_guarantee_rewards = <ErasValidatorPrefs<T>>::get(&era, &ledger.stash).fee * total_reward;
+            let mut guarantee_rewards = Zero::zero();
+            // Pay staking reward to guarantors
+            for i in &exposure.others {
+                let reward_ratio = Perbill::from_rational_approximation(i.value, total);
+                // Reward guarantors
+                guarantee_rewards += reward_ratio * estimated_guarantee_rewards;
+                if let Some(imbalance) = Self::make_payout(
+                    &i.who,
+                    reward_ratio * estimated_guarantee_rewards
+                ) {
+                    Self::deposit_event(RawEvent::Reward(i.who.clone(), imbalance.peek()));
+                };
+            }
+            // Pay staking reward to validator
+            validator_imbalance.maybe_subsume(Self::make_payout(&ledger.stash, total_reward - guarantee_rewards));
             Self::deposit_event(RawEvent::Reward(ledger.stash, validator_imbalance.peek()));
             // remove ErasAuthoringPayout
             <ErasAuthoringPayout<T>>::remove_prefix(era);
