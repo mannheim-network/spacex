@@ -645,13 +645,14 @@ decl_storage! {
             => ValidatorPrefs;
 
         /// Total staking payout at era.
-        // pub ErasStakingPayout get(fn eras_staking_payout):
-        //     map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
         pub ErasStakingPayout get(fn eras_staking_payout):
-            map hasher(twox_64_concat) EraIndex => Option<EraRewardRelease<BalanceOf<T>, EraIndex>>;
+            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
+            => Option<EraRewardRelease<BalanceOf<T>, EraIndex>>;
 
         pub ErasCouncilPayout get(fn eras_council_payout):
-            map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
+            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
+            => Option<BalanceOf<T>>;
+
         /// Market staking payout of validator at era.
         pub ErasMarketPayout get(fn eras_market_payout):
             map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
@@ -1562,7 +1563,7 @@ decl_module! {
         #[weight = 1000]
         fn cancel_era_reward(origin, era_index: EraIndex) {
             ensure_root(origin)?;
-            <ErasStakingPayout<T>>::remove(era_index);
+            <ErasStakingPayout<T>>::remove_prefix(era_index);
         }
 
         #[weight = 1000]
@@ -1919,11 +1920,11 @@ impl<T: Config> Module<T> {
         // Note: if era has no reward to be claimed, era may be future. better not to update
         // `ledger.claimed_rewards` in this case.
         let staking_reward_release =
-            <ErasStakingPayout<T>>::get(&era).ok_or_else(|| Error::<T>::InvalidEraToReward)?;
+            <ErasStakingPayout<T>>::get(&era, &validator_stash).ok_or_else(|| Error::<T>::InvalidEraToReward)?;
         let era_staking_payout_released =
             staking_reward_release.cal_release_reward(current_era, T::RewardReleaseInterval::get());
 
-        let council_reward = <ErasCouncilPayout<T>>::get(&era).unwrap_or(Zero::zero());
+        let council_reward = <ErasCouncilPayout<T>>::get(&era, &validator_stash).ok_or_else(|| Error::<T>::InvalidEraToReward)?;
 
         let controller = Self::bonded(&validator_stash).ok_or(Error::<T>::NotStash)?;
         let mut ledger = <Ledger<T>>::get(&controller).ok_or_else(|| Error::<T>::NotController)?;
@@ -1951,7 +1952,7 @@ impl<T: Config> Module<T> {
         let mut staking_reward_release = staking_reward_release.clone();
         staking_reward_release.claimed_reward = new_claimed_reward;
         staking_reward_release.last_claim_era = current_era;
-        <ErasStakingPayout<T>>::insert(era, staking_reward_release);
+        <ErasStakingPayout<T>>::insert(era, &validator_stash, staking_reward_release);
 
         //  Pay authoring reward
         let mut validator_imbalance = <PositiveImbalanceOf<T>>::zero();
@@ -2001,7 +2002,7 @@ impl<T: Config> Module<T> {
                 };
             }
             // remove ErasCouncilPayout
-            <ErasCouncilPayout<T>>::remove(era);
+            <ErasCouncilPayout<T>>::remove(era, &validator_stash);
         }
 
         if !total_reward.is_zero() {
@@ -2025,7 +2026,7 @@ impl<T: Config> Module<T> {
             validator_imbalance.maybe_subsume(Self::make_payout(&ledger.stash, total_reward - guarantee_rewards));
             Self::deposit_event(RawEvent::Reward(ledger.stash, validator_imbalance.peek()));
             // remove ErasAuthoringPayout
-            <ErasAuthoringPayout<T>>::remove_prefix(era);
+            <ErasAuthoringPayout<T>>::remove(era, &validator_stash);
         }
         Ok(())
     }
@@ -2194,27 +2195,23 @@ impl<T: Config> Module<T> {
                     .saturating_sub(total_authoring_payout)
                     .saturating_sub(total_council_payout);
 
-                // 4. Block authoring payout
                 for (v, p) in points.individual.iter() {
                     if *p != 0u32 {
-                        let authoring_reward =
-                            Perbill::from_rational_approximation(*p, points.total)
-                                * total_authoring_payout;
-                        <ErasAuthoringPayout<T>>::insert(&active_era_index, v, authoring_reward);
+                        let reward_ratio = Perbill::from_rational_approximation(*p, points.total);
+                        // 4. Block authoring payout
+                        <ErasAuthoringPayout<T>>::insert(&active_era_index, v, reward_ratio * total_authoring_payout);
+                        // 5. Staking payout
+                        let reward_release = EraRewardRelease {
+                            total_reward: reward_ratio * total_staking_payout,
+                            claimed_reward: Zero::zero(),
+                            last_claim_era: Zero::zero(),
+                            reward_era: active_era_index,
+                        };
+                        <ErasStakingPayout<T>>::insert(active_era_index, v, reward_release);
+                        // 6. collective payout
+                        <ErasCouncilPayout<T>>::insert(active_era_index, v, reward_ratio * total_council_payout);
                     }
                 }
-
-                // 5. Staking payout
-                let reward_release = EraRewardRelease {
-                    total_reward: total_staking_payout,
-                    claimed_reward: Zero::zero(),
-                    last_claim_era: Zero::zero(),
-                    reward_era: active_era_index,
-                };
-                <ErasStakingPayout<T>>::insert(active_era_index, reward_release);
-
-                // 6. collective payout
-                <ErasCouncilPayout<T>>::insert(active_era_index, total_council_payout);
 
                 // 7. Deposit era reward event
                 Self::deposit_event(RawEvent::EraReward(
@@ -2237,11 +2234,11 @@ impl<T: Config> Module<T> {
         <ErasStakers<T>>::remove_prefix(era_index);
         <ErasStakersClipped<T>>::remove_prefix(era_index);
         <ErasValidatorPrefs<T>>::remove_prefix(era_index);
-        <ErasStakingPayout<T>>::remove(era_index);
+        <ErasStakingPayout<T>>::remove_prefix(era_index);
         <ErasMarketPayout<T>>::remove(era_index);
         <ErasTotalStakes<T>>::remove(era_index);
         <ErasAuthoringPayout<T>>::remove_prefix(era_index);
-        <ErasCouncilPayout<T>>::remove(era_index);
+        <ErasCouncilPayout<T>>::remove_prefix(era_index);
         <ErasRewardPoints<T>>::remove(era_index);
         ErasStartSessionIndex::remove(era_index);
     }
