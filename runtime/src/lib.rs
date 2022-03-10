@@ -103,7 +103,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("spacex"),
     impl_name: create_runtime_str!("mannheim-spacex"),
     authoring_version: 1,
-    spec_version: 6,
+    spec_version: 7,
     impl_version: 1,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1
@@ -730,7 +730,7 @@ parameter_types! {
     pub const PunishmentSlots: u32 = 8; // 8 report slot == 8 hours
     pub const MaxGroupSize: u32 = 1000;
     pub const Slash: Balance = 100 * DOLLARS;
-    pub const Locks: Balance = 1000 * DOLLARS;
+    pub const Locks: Balance = 900 * DOLLARS;
     pub const LockPeriod: BlockNumber = 30 * MINUTES;
 }
 
