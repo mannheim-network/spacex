@@ -302,7 +302,6 @@ fn rewards_should_work() {
         .execute_with(|| {
             // Init some balances
             let _ = Balances::make_free_balance_be(&2, 500);
-
             let delay = 1000;
             let init_balance_2 = Balances::total_balance(&2);
             let init_balance_10 = Balances::total_balance(&10);
@@ -3006,7 +3005,7 @@ fn reward_validator_slashing_validator_doesnt_overflow() {
             last_claim_era: Zero::zero(),
             reward_era: 0,
         };
-        <ErasStakingPayout<Test>>::insert(0, reward_release);
+        <ErasStakingPayout<Test>>::insert(0, &11, reward_release);
 
         // Check reward
         let _ = Staking::reward_stakers(Origin::signed(10), 11, 0);
@@ -4748,13 +4747,13 @@ fn era_clean_should_work() {
             <Module<Test>>::reward_by_ids(vec![(21, 1)]);
             start_era(84, true);
             assert!(<ErasAuthoringPayout<Test>>::contains_key(0, 21));
-            assert!(<ErasStakingPayout<Test>>::contains_key(0));
+            assert!(<ErasStakingPayout<Test>>::contains_key(0,21));
             assert!(<ErasTotalStakes<Test>>::contains_key(0));
             assert!(<ErasStakers<Test>>::contains_key(0, 21));
             assert!(<ErasStakersClipped<Test>>::contains_key(0, 21));
             assert!(<ErasValidatorPrefs<Test>>::contains_key(0, 21));
             start_era(85, true);
-            assert!(!<ErasStakingPayout<Test>>::contains_key(0));
+            assert!(!<ErasStakingPayout<Test>>::contains_key(0, 21));
             assert!(!<ErasAuthoringPayout<Test>>::contains_key(0, 21));
             assert!(!<ErasTotalStakes<Test>>::contains_key(0));
             assert!(!<ErasStakers<Test>>::contains_key(0, 21));
