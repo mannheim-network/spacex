@@ -717,6 +717,10 @@ decl_storage! {
         pub UnappliedSlashes:
             map hasher(twox_64_concat) EraIndex => Vec<UnappliedSlash<T::AccountId, BalanceOf<T>>>;
 
+        pub EraWorkload get(fn era_workload):
+            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
+            => Option<u128>;
+
         /// A mapping from still-bonded eras to the first session index of that era.
         BondedEras: Vec<(EraIndex, SessionIndex)>;
 
@@ -749,9 +753,6 @@ decl_storage! {
         /// Force Selection
         ForceSelection get(fn force_selection): bool = false;
 
-        EraWorkload get(fn era_workload):
-            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
-            => Option<u128>;
     }
     add_extra_genesis {
         config(stakers):
@@ -1969,7 +1970,7 @@ impl<T: Config> Module<T> {
             let count = miners.len();
             let total_workload = <EraWorkload<T>>::get(&era, &validator_stash).unwrap_or_default();
             // 5. Pay reward to miner
-            if count == 0 {
+            if count == 0 || total_workload.is_zero(){
                 total_reward += era_staking_payout_released;
             } else {
                 for i in miners {
@@ -2155,7 +2156,7 @@ impl<T: Config> Module<T> {
         });
 
         for (v_stash, _) in <Validators<T>>::iter() {
-            let v_workload = T::SworkerInterface::get_workload(&v_stash);
+            let v_workload = T::SworkerInterface::get_owner_workload(&v_stash);
             <EraWorkload<T>>::insert(active_era, &v_stash, v_workload);
             let members = T::SworkerInterface::get_members(&v_stash).unwrap_or(Default::default());
             for miner in members {

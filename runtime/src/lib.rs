@@ -103,7 +103,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("spacex"),
     impl_name: create_runtime_str!("mannheim-spacex"),
     authoring_version: 1,
-    spec_version: 6,
+    spec_version: 8,
     impl_version: 1,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1
@@ -392,7 +392,7 @@ parameter_types! {
     // 6 sessions in an era (6 hours).
     pub const SessionsPerEra: SessionIndex = 8;
     // 112 eras for unbonding (28 days).
-    pub const BondingDuration: EraIndex = 28 * 4;
+    pub const BondingDuration: EraIndex = 60 * 3;
     // 108 eras in which slashes can be cancelled (slightly less than 28 days).
     pub const SlashDeferDuration: EraIndex = 27 * 4;
     // 1 * HEIMs / TB, since we treat 1 TB = 1_000_000_000_000, so the ratio = `1`
@@ -730,7 +730,7 @@ parameter_types! {
     pub const PunishmentSlots: u32 = 8; // 8 report slot == 8 hours
     pub const MaxGroupSize: u32 = 1000;
     pub const Slash: Balance = 100 * DOLLARS;
-    pub const Locks: Balance = 1000 * DOLLARS;
+    pub const Locks: Balance = 900 * DOLLARS;
     pub const LockPeriod: BlockNumber = 30 * MINUTES;
 }
 
