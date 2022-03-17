@@ -226,7 +226,7 @@ decl_storage! {
     trait Store for Module<T: Config> as Swork {
 
         /// The depth of the history of the ReportedInSlot
-        HistorySlotDepth get(fn history_slot_depth): ReportSlot = 6 * REPORT_SLOT;
+        HistorySlotDepth get(fn history_slot_depth): ReportSlot = 8 * REPORT_SLOT;
 
         /// The sWorker enclave codes, this should be managed by sudo/democracy
         pub Codes get (fn codes): map hasher(twox_64_concat) SworkerCode => Option<T::BlockNumber>;
@@ -808,6 +808,8 @@ decl_module! {
             T::Currency::set_lock(SWORK_ID, &who, locks, WithdrawReasons::all());
             let now = <frame_system::Module<T>>::block_number();
             <LockBlock<T>>::insert(&who, now);
+
+            <MinerWorkload<T>>::remove(&who);
             // 8. Join the group
             <Groups<T>>::mutate(&owner, |group| {
                 group.members.insert(who.clone());

@@ -45,7 +45,7 @@ use sp_staking::{
 };
 use total_stake_limit_ratio::total_stake_limit_ratio;
 
-use sp_std::{collections::btree_map::BTreeMap, convert::TryInto, prelude::*};
+use sp_std::{collections::btree_map::BTreeMap, convert::TryInto, prelude::*, collections::btree_set::BTreeSet};
 
 use frame_system::{ensure_root, ensure_signed};
 #[cfg(feature = "std")]
@@ -580,7 +580,7 @@ decl_storage! {
         /// Number of eras to keep in history.
         ///
         /// Information is kept for eras in `[current_era - history_depth; current_era]`.
-        HistoryDepth get(fn history_depth) config(): u32 = 96;
+        HistoryDepth get(fn history_depth) config(): u32 = 110;
 
         /// Start era for reward curve
         StartRewardEra get(fn start_reward_era) config(): EraIndex = 0;
@@ -720,6 +720,10 @@ decl_storage! {
         pub EraWorkload get(fn era_workload):
             double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
             => Option<u128>;
+
+        pub EraMembers get(fn era_members):
+            double_map hasher(twox_64_concat) EraIndex, hasher(twox_64_concat) T::AccountId
+            => Option<BTreeSet<T::AccountId>>;
 
         /// A mapping from still-bonded eras to the first session index of that era.
         BondedEras: Vec<(EraIndex, SessionIndex)>;
@@ -1925,7 +1929,10 @@ impl<T: Config> Module<T> {
         let era_staking_payout_released =
             staking_reward_release.cal_release_reward(current_era, T::RewardReleaseInterval::get());
 
-        let council_reward = <ErasCouncilPayout<T>>::get(&era, &validator_stash).ok_or_else(|| Error::<T>::InvalidEraToReward)?;
+        let mut council_reward: BalanceOf<T> = Zero::zero();
+        if let Some(current_council_reward) = <ErasCouncilPayout<T>>::get(&era, &validator_stash) {
+            council_reward = council_reward.saturating_add(current_council_reward);
+        }
 
         let controller = Self::bonded(&validator_stash).ok_or(Error::<T>::NotStash)?;
         let mut ledger = <Ledger<T>>::get(&controller).ok_or_else(|| Error::<T>::NotController)?;
@@ -1965,8 +1972,7 @@ impl<T: Config> Module<T> {
         // Calculate miner rewards for staking
 
         if !era_staking_payout_released.is_zero() {
-            let miners =
-                T::SworkerInterface::get_members(&validator_stash).unwrap_or(Default::default());
+            let miners = <EraMembers<T>>::get(&era, &validator_stash).unwrap_or(Default::default());
             let count = miners.len();
             let total_workload = <EraWorkload<T>>::get(&era, &validator_stash).unwrap_or_default();
             // 5. Pay reward to miner
@@ -2155,16 +2161,6 @@ impl<T: Config> Module<T> {
             }
         });
 
-        for (v_stash, _) in <Validators<T>>::iter() {
-            let v_workload = T::SworkerInterface::get_owner_workload(&v_stash);
-            <EraWorkload<T>>::insert(active_era, &v_stash, v_workload);
-            let members = T::SworkerInterface::get_members(&v_stash).unwrap_or(Default::default());
-            for miner in members {
-                let m_workload = T::SworkerInterface::get_workload(&miner);
-                <EraWorkload<T>>::insert(active_era, &miner, m_workload);
-            }
-        }
-
         Self::apply_unapplied_slashes(active_era);
     }
 
@@ -2222,6 +2218,16 @@ impl<T: Config> Module<T> {
                     total_staking_payout,
                 ));
 
+                for (v_stash, _) in <Validators<T>>::iter() {
+                    let v_workload = T::SworkerInterface::get_owner_workload(&v_stash);
+                    <EraWorkload<T>>::insert(active_era_index, &v_stash, v_workload);
+                    let members = T::SworkerInterface::get_members(&v_stash).unwrap_or(Default::default());
+                    <EraMembers<T>>::insert(active_era_index, &v_stash, members.clone());
+                    for miner in members {
+                        let m_workload = T::SworkerInterface::get_workload(&miner);
+                        <EraWorkload<T>>::insert(active_era_index, &miner, m_workload);
+                    }
+                }
                 // TODO: enable treasury and might bring this back
                 // T::Reward::on_unbalanced(total_imbalance);
                 // This is not been used
