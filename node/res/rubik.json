@@ -3,8 +3,7 @@
   "id": "rubik",
   "chainType": "Live",
   "bootNodes": [
-    "/ip4/101.200.164.225/tcp/30333/p2p/12D3KooWNC7ddTkKNVUZNGzSAqXBArAK3aGRe9C122zTqawsM1aR",
-    "/ip4/101.200.164.225/tcp/30334/p2p/12D3KooW9yg64qUffRxojVBskLbQVgoYsvvbZvfLv4opNzAT2WR1"
+
   ],
   "telemetryEndpoints": null,
   "protocolId": "heim",
